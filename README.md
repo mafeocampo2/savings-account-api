@@ -52,6 +52,14 @@ The server starts on `http://localhost:3000`.
 npm test
 ```
 
+## Web frontend
+
+A simple web interface (styled like a savings passbook) is served automatically
+at `http://localhost:3000` once the server is running. It lets you create
+accounts, deposit, withdraw, and check the balance directly in the browser —
+no Postman required. It's a plain HTML/CSS/JS page (`public/index.html`) that
+calls the same REST endpoints described below via `fetch`.
+
 ## Endpoints
 
 | Method | Endpoint                          | Description                     |
