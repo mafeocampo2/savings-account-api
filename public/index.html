@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Savings Account API — Libreta de Ahorros</title>
+<style>
+  :root {
+    --paper: #f6f2e9;
+    --paper-line: #d9cfb8;
+    --ink: #1f2a24;
+    --ink-soft: #55604f;
+    --ledger-green: #2f4d3a;
+    --ledger-green-dark: #1f3527;
+    --stamp-red: #9c3b2f;
+    --gold: #a8843b;
+    --mono: "IBM Plex Mono", "Courier New", monospace;
+    --serif: "Georgia", "Iowan Old Style", serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--paper-line) 28px),
+      var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    display: flex;
+    justify-content: center;
+    padding: 48px 20px 80px;
+  }
+
+  .passbook {
+    width: 100%;
+    max-width: 720px;
+  }
+
+  header.cover {
+    background: linear-gradient(160deg, var(--ledger-green), var(--ledger-green-dark));
+    color: #eee6cf;
+    border-radius: 6px 6px 0 0;
+    padding: 36px 40px 30px;
+    position: relative;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+  }
+
+  header.cover::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -8px;
+    height: 8px;
+    background: repeating-linear-gradient(90deg, var(--gold) 0 10px, transparent 10px 20px);
+    opacity: 0.6;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    letter-spacing: 0.18em;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: 30px;
+    margin: 0 0 6px;
+    font-weight: normal;
+  }
+
+  .subtitle {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #cfd8c8;
+    margin: 0;
+  }
+
+  .status-pill {
+    position: absolute;
+    top: 36px;
+    right: 40px;
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .status-pill.online { color: #b7e4c7; border-color: #b7e4c7; }
+  .status-pill.offline { color: #e4b7b7; border-color: #e4b7b7; }
+
+  main.pages {
+    background: transparent;
+    padding: 32px 40px 10px;
+  }
+
+  .field-group {
+    margin-bottom: 22px;
+  }
+
+  .field-group label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+
+  .row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  input, select {
+    font-family: var(--mono);
+    font-size: 15px;
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    outline: none;
+    min-width: 160px;
+  }
+
+  input::placeholder { color: #9a8f78; }
+  input:focus, select:focus { border-bottom-color: var(--stamp-red); }
+
+  button {
+    font-family: var(--mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 11px 20px;
+    border: 1px solid var(--ledger-green);
+    background: var(--ledger-green);
+    color: #f6f2e9;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+  }
+  button:hover { background: var(--ledger-green-dark); }
+  button:active { transform: scale(0.98); }
+
+  button.secondary {
+    background: transparent;
+    color: var(--ledger-green);
+  }
+  button.secondary:hover { background: rgba(47,77,58,0.08); }
+
+  button.danger {
+    border-color: var(--stamp-red);
+    background: transparent;
+    color: var(--stamp-red);
+  }
+  button.danger:hover { background: rgba(156,59,47,0.08); }
+
+  section.entry {
+    border-top: 1px dashed var(--paper-line);
+    padding: 26px 0;
+  }
+
+  section.entry h2 {
+    font-family: var(--mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  section.entry h2::before {
+    content: attr(data-mark);
+    color: var(--gold);
+  }
+
+  .balance-display {
+    font-family: var(--mono);
+    font-size: 42px;
+    color: var(--ledger-green-dark);
+    margin: 4px 0 2px;
+  }
+
+  .balance-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+  }
+
+  .ledger-log {
+    font-family: var(--mono);
+    font-size: 13px;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--paper-line);
+    background: rgba(255,255,255,0.35);
+    border-radius: 4px;
+  }
+
+  .ledger-row {
+    display: grid;
+    grid-template-columns: 90px 1fr auto;
+    gap: 10px;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--paper-line);
+    align-items: center;
+  }
+  .ledger-row:last-child { border-bottom: none; }
+  .ledger-row .time { color: var(--ink-soft); font-size: 11px; }
+  .ledger-row .amt.credit { color: var(--ledger-green-dark); }
+  .ledger-row .amt.debit { color: var(--stamp-red); }
+
+  .stamp {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border: 2px solid currentColor;
+    border-radius: 3px;
+    transform: rotate(-3deg);
+  }
+  .stamp.approved { color: var(--ledger-green-dark); }
+  .stamp.rejected { color: var(--stamp-red); }
+
+  .message-box {
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 12px 14px;
+    border-radius: 4px;
+    margin-top: 14px;
+    display: none;
+    white-space: pre-wrap;
+  }
+  .message-box.show { display: block; }
+  .message-box.success {
+    background: rgba(47,77,58,0.1);
+    color: var(--ledger-green-dark);
+    border: 1px solid rgba(47,77,58,0.3);
+  }
+  .message-box.error {
+    background: rgba(156,59,47,0.1);
+    color: var(--stamp-red);
+    border: 1px solid rgba(156,59,47,0.3);
+  }
+
+  footer.pages {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+    padding: 18px 0 4px;
+  }
+
+  @media (max-width: 560px) {
+    header.cover, main.pages { padding-left: 22px; padding-right: 22px; }
+    .status-pill { position: static; display: inline-block; margin-top: 12px; }
+  }
+</style>
+</head>
+<body>
+  <div class="passbook">
+    <header class="cover">
+      <p class="eyebrow">TechSoft S.A. — Prototype</p>
+      <h1>Libreta de Ahorros</h1>
+      <p class="subtitle">Savings Account REST API · localhost:3000</p>
+      <span id="statusPill" class="status-pill offline">verificando conexión…</span>
+    </header>
+
+    <main class="pages">
+
+      <section class="entry">
+        <h2 data-mark="§1">Abrir cuenta</h2>
+        <div class="row">
+          <div class="field-group">
+            <label for="ownerName">Titular</label>
+            <input id="ownerName" type="text" placeholder="Nombre completo" />
+          </div>
+          <div class="field-group">
+            <label for="initialBalance">Depósito inicial</label>
+            <input id="initialBalance" type="text" placeholder="0" />
+          </div>
+          <button id="btnCreate">Crear cuenta</button>
+        </div>
+        <div id="msgCreate" class="message-box"></div>
+      </section>
+
+      <section class="entry">
+        <h2 data-mark="§2">Cuenta activa</h2>
+        <div class="row">
+          <div class="field-group">
+            <label for="accountSelect">Seleccionar cuenta</label>
+            <select id="accountSelect"><option value="">— sin cuentas aún —</option></select>
+          </div>
+          <button id="btnRefreshAccounts" class="secondary">Actualizar lista</button>
+        </div>
+        <p class="balance-label">Saldo disponible</p>
+        <div class="balance-display" id="balanceDisplay">—</div>
+      </section>
+
+      <section class="entry">
+        <h2 data-mark="§3">Depositar</h2>
+        <div class="row">
+          <div class="field-group">
+            <label for="depositAmount">Monto</label>
+            <input id="depositAmount" type="text" placeholder="0" />
+          </div>
+          <button id="btnDeposit">Depositar</button>
+        </div>
+        <div id="msgDeposit" class="message-box"></div>
+      </section>
+
+      <section class="entry">
+        <h2 data-mark="§4">Retirar</h2>
+        <div class="row">
+          <div class="field-group">
+            <label for="withdrawAmount">Monto</label>
+            <input id="withdrawAmount" type="text" placeholder="0" />
+          </div>
+          <button id="btnWithdraw" class="danger">Retirar</button>
+        </div>
+        <div id="msgWithdraw" class="message-box"></div>
+      </section>
+
+      <section class="entry">
+        <h2 data-mark="§5">Movimientos de esta sesión</h2>
+        <div class="ledger-log" id="ledgerLog">
+          <div class="ledger-row"><span class="time">—</span><span>Sin movimientos todavía</span><span></span></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="pages">— fin de la libreta · registro generado localmente, no persiste al recargar —</footer>
+  </div>
+
+<script>
+  const API_BASE = window.location.origin + '/api/accounts';
+
+  const statusPill = document.getElementById('statusPill');
+  const accountSelect = document.getElementById('accountSelect');
+  const balanceDisplay = document.getElementById('balanceDisplay');
+  const ledgerLog = document.getElementById('ledgerLog');
+
+  let ledgerEntries = [];
+
+  function showMessage(elId, type, text) {
+    const el = document.getElementById(elId);
+    el.textContent = text;
+    el.className = 'message-box show ' + type;
+  }
+
+  function clearMessage(elId) {
+    const el = document.getElementById(elId);
+    el.className = 'message-box';
+  }
+
+  function addLedgerEntry(label, amountText, kind) {
+    ledgerEntries.unshift({ time: new Date().toLocaleTimeString(), label, amountText, kind });
+    renderLedger();
+  }
+
+  function renderLedger() {
+    if (ledgerEntries.length === 0) {
+      ledgerLog.innerHTML = '<div class="ledger-row"><span class="time">—</span><span>Sin movimientos todavía</span><span></span></div>';
+      return;
+    }
+    ledgerLog.innerHTML = ledgerEntries.map(e => `
+      <div class="ledger-row">
+        <span class="time">${e.time}</span>
+        <span>${e.label}</span>
+        <span class="amt ${e.kind}">${e.amountText}</span>
+      </div>
+    `).join('');
+  }
+
+  async function checkHealth() {
+    try {
+      const res = await fetch(window.location.origin + '/health');
+      if (!res.ok) throw new Error();
+      statusPill.textContent = 'conectado';
+      statusPill.className = 'status-pill online';
+    } catch (e) {
+      statusPill.textContent = 'sin conexión con el servidor';
+      statusPill.className = 'status-pill offline';
+    }
+  }
+
+  async function loadAccounts(selectId) {
+    try {
+      const res = await fetch(API_BASE);
+      const json = await res.json();
+      const accounts = json.data || [];
+      if (accounts.length === 0) {
+        accountSelect.innerHTML = '<option value="">— sin cuentas aún —</option>';
+        balanceDisplay.textContent = '—';
+        return;
+      }
+      accountSelect.innerHTML = accounts
+        .map(a => `<option value="${a.id}">#${a.id} — ${a.ownerName}</option>`)
+        .join('');
+      if (selectId) accountSelect.value = String(selectId);
+      await refreshBalance();
+    } catch (e) {
+      statusPill.textContent = 'sin conexión con el servidor';
+      statusPill.className = 'status-pill offline';
+    }
+  }
+
+  async function refreshBalance() {
+    const id = accountSelect.value;
+    if (!id) { balanceDisplay.textContent = '—'; return; }
+    try {
+      const res = await fetch(`${API_BASE}/${id}/balance`);
+      const json = await res.json();
+      if (json.success) {
+        balanceDisplay.textContent = formatMoney(json.data.balance);
+      } else {
+        balanceDisplay.textContent = '—';
+      }
+    } catch (e) {
+      balanceDisplay.textContent = '—';
+    }
+  }
+
+  function formatMoney(value) {
+    return '$ ' + Number(value).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  document.getElementById('btnCreate').addEventListener('click', async () => {
+    clearMessage('msgCreate');
+    const ownerName = document.getElementById('ownerName').value.trim();
+    const initialBalance = document.getElementById('initialBalance').value.trim();
+
+    try {
+      const body = { ownerName };
+      if (initialBalance !== '') body.initialBalance = Number(initialBalance);
+
+      const res = await fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        showMessage('msgCreate', 'error', 'Rechazado — ' + json.message);
+        return;
+      }
+
+      showMessage('msgCreate', 'success', 'Cuenta creada — #' + json.data.id + ' · ' + json.data.ownerName);
+      document.getElementById('ownerName').value = '';
+      document.getElementById('initialBalance').value = '';
+      addLedgerEntry('Apertura de cuenta #' + json.data.id, formatMoney(json.data.balance), 'credit');
+      await loadAccounts(json.data.id);
+    } catch (e) {
+      showMessage('msgCreate', 'error', 'No fue posible conectar con el servidor.');
+    }
+  });
+
+  document.getElementById('btnRefreshAccounts').addEventListener('click', () => loadAccounts());
+  accountSelect.addEventListener('change', refreshBalance);
+
+  document.getElementById('btnDeposit').addEventListener('click', async () => {
+    clearMessage('msgDeposit');
+    const id = accountSelect.value;
+    const amount = document.getElementById('depositAmount').value.trim();
+
+    if (!id) { showMessage('msgDeposit', 'error', 'Primero selecciona o crea una cuenta.'); return; }
+
+    try {
+      const res = await fetch(`${API_BASE}/${id}/deposit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: Number(amount) })
+      });
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        showMessage('msgDeposit', 'error', 'Rechazado — ' + json.message);
+        addLedgerEntry('Depósito rechazado', json.message, 'debit');
+        return;
+      }
+
+      showMessage('msgDeposit', 'success', 'Aprobado — nuevo saldo: ' + formatMoney(json.data.newBalance));
+      document.getElementById('depositAmount').value = '';
+      addLedgerEntry('Depósito', '+ ' + formatMoney(json.data.amount), 'credit');
+      await refreshBalance();
+    } catch (e) {
+      showMessage('msgDeposit', 'error', 'No fue posible conectar con el servidor.');
+    }
+  });
+
+  document.getElementById('btnWithdraw').addEventListener('click', async () => {
+    clearMessage('msgWithdraw');
+    const id = accountSelect.value;
+    const amount = document.getElementById('withdrawAmount').value.trim();
+
+    if (!id) { showMessage('msgWithdraw', 'error', 'Primero selecciona o crea una cuenta.'); return; }
+
+    try {
+      const res = await fetch(`${API_BASE}/${id}/withdraw`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: Number(amount) })
+      });
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        showMessage('msgWithdraw', 'error', 'Rechazado — ' + json.message);
+        addLedgerEntry('Retiro rechazado', json.message, 'debit');
+        return;
+      }
+
+      showMessage('msgWithdraw', 'success', 'Aprobado — nuevo saldo: ' + formatMoney(json.data.newBalance));
+      document.getElementById('withdrawAmount').value = '';
+      addLedgerEntry('Retiro', '− ' + formatMoney(json.data.amount), 'debit');
+      await refreshBalance();
+    } catch (e) {
+      showMessage('msgWithdraw', 'error', 'No fue posible conectar con el servidor.');
+    }
+  });
+
+  checkHealth();
+  loadAccounts();
+</script>
+</body>
+</html>
