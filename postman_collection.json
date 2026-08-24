@@ -1,0 +1,77 @@
+{
+  "info": {
+    "name": "Savings Account API",
+    "description": "Collection to test the Savings Account REST API endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "accountId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": { "method": "GET", "url": "{{baseUrl}}/" }
+    },
+    {
+      "name": "Create Account",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"ownerName\": \"Ana\",\n  \"initialBalance\": 100\n}"
+        },
+        "url": "{{baseUrl}}/api/accounts"
+      }
+    },
+    {
+      "name": "List Accounts",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/accounts" }
+    },
+    {
+      "name": "Get Account By Id",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/accounts/{{accountId}}" }
+    },
+    {
+      "name": "Get Balance",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/accounts/{{accountId}}/balance" }
+    },
+    {
+      "name": "Deposit",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"amount\": 50\n}" },
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/deposit"
+      }
+    },
+    {
+      "name": "Withdraw",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"amount\": 30\n}" },
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/withdraw"
+      }
+    },
+    {
+      "name": "Withdraw - Insufficient Balance (error case)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"amount\": 999999\n}" },
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/withdraw"
+      }
+    },
+    {
+      "name": "Deposit - Invalid Amount (error case)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"amount\": \"abc\"\n}" },
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}/deposit"
+      }
+    }
+  ]
+}
