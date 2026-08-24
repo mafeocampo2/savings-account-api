@@ -1,0 +1,21 @@
+{
+  "name": "savings-account-api",
+  "version": "1.0.0",
+  "description": "REST API for a savings account system (deposit, withdraw, balance inquiry) built for TechSoft S.A. university project.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "savings-account",
+    "rest-api",
+    "express"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
