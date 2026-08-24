@@ -1,542 +1,677 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Savings Account API — Libreta de Ahorros</title>
+<meta charset="UTF-8">
+<title>Libreta de Ahorros — TECHSOFT S.A.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  :root {
-    --paper: #f6f2e9;
-    --paper-line: #d9cfb8;
-    --ink: #1f2a24;
-    --ink-soft: #55604f;
-    --ledger-green: #2f4d3a;
-    --ledger-green-dark: #1f3527;
-    --stamp-red: #9c3b2f;
-    --gold: #a8843b;
-    --mono: "IBM Plex Mono", "Courier New", monospace;
-    --serif: "Georgia", "Iowan Old Style", serif;
+  :root{
+    --arandano: #34324E;
+    --denim: #2F5680;
+    --acero: #6D8CA3;
+    --alicia: #A7C6D9;
+    --alicia-deep: #8FB6CC;
+    --denim-btn: #2F5680;
+
+    --yellow: var(--alicia);
+    --yellow-deep: var(--alicia-deep);
+    --navy: var(--arandano);
+    --navy-2: #3D3B5C;
+    --ink: #2A2A38;
+    --ink-soft: #6B7280;
+    --line: #DCE3E9;
+    --paper: #F5F7F9;
+    --white: #FFFFFF;
+    --green: #2E6E5E;
+    --green-bg: #E7F2EE;
+    --red: #A94A45;
+    --red-bg: #F7EBE9;
   }
 
-  * { box-sizing: border-box; }
+  [data-theme="dark"]{
+    --navy: #1C1B2E;
+    --navy-2: #2A2846;
+    --ink: #E8E9EE;
+    --ink-soft: #9AA3B2;
+    --line: #33344A;
+    --paper: #14141F;
+    --white: #1D1E2C;
+    --yellow: var(--alicia);
+    --yellow-deep: var(--alicia-deep);
+    --green: #6FCBAE;
+    --green-bg: #1C3833;
+    --red: #E1958F;
+    --red-bg: #3A2426;
+    --denim-btn: #7FA3C4;
+  }
 
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background:
-      repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--paper-line) 28px),
-      var(--paper);
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--paper);
     color: var(--ink);
-    font-family: var(--serif);
-    display: flex;
-    justify-content: center;
-    padding: 48px 20px 80px;
+    font-family: "Helvetica Neue", Arial, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color .2s ease, color .2s ease;
+  }
+  .section, .topbar, .status-pill, input, select, button{
+    transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .page{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 32px 80px;
   }
 
-  .passbook {
-    width: 100%;
-    max-width: 720px;
+  /* ---------- Top bar ---------- */
+  .topbar{
+    background: var(--navy);
+    color: var(--white);
+    margin-bottom: 40px;
   }
-
-  header.cover {
-    background: linear-gradient(160deg, var(--ledger-green), var(--ledger-green-dark));
-    color: #eee6cf;
-    border-radius: 6px 6px 0 0;
-    padding: 36px 40px 30px;
-    position: relative;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+  .topbar-inner{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 22px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
   }
-
-  header.cover::after {
-    content: "";
-    position: absolute;
-    left: 0; right: 0; bottom: -8px;
-    height: 8px;
-    background: repeating-linear-gradient(90deg, var(--gold) 0 10px, transparent 10px 20px);
-    opacity: 0.6;
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
   }
-
-  .eyebrow {
-    font-family: var(--mono);
-    letter-spacing: 0.18em;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin: 0 0 10px;
+  .brand-mark{
+    width:38px;height:38px;
+    background: var(--yellow);
+    border-radius: 8px;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;
+    color: var(--navy);
+    font-size:18px;
+    flex-shrink:0;
   }
-
-  h1 {
-    font-family: var(--serif);
-    font-size: 30px;
-    margin: 0 0 6px;
-    font-weight: normal;
+  .brand-text .eyebrow{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color: #9FB2C4;
+    font-weight:600;
+    margin-bottom:2px;
   }
-
-  .subtitle {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: #cfd8c8;
-    margin: 0;
+  .brand-text h1{
+    margin:0;
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:-.01em;
   }
-
-  .status-pill {
-    position: absolute;
-    top: 36px;
-    right: 40px;
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 5px 10px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.3);
+  .status-pill{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background: rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);
+    padding:8px 16px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:600;
   }
-  .status-pill.online { color: #b7e4c7; border-color: #b7e4c7; }
-  .status-pill.offline { color: #e4b7b7; border-color: #e4b7b7; }
-
-  main.pages {
-    background: transparent;
-    padding: 32px 40px 10px;
+  .status-dot{
+    width:8px;height:8px;border-radius:50%;
+    background: var(--yellow);
+    box-shadow: 0 0 0 4px rgba(167,198,217,.22);
   }
+  .status-dot.offline{
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(169,74,69,.22);
+  }
+  .topbar-actions{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .theme-toggle{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background: rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);
+    color: var(--white);
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:600;
+    text-transform:none;
+    letter-spacing:normal;
+    cursor:pointer;
+  }
+  .theme-toggle:hover{ background: rgba(255,255,255,.14); }
+  .theme-toggle .icon{ font-size:14px; line-height:1; }
 
-  .field-group {
+  /* ---------- Section shell ---------- */
+  .section{
+    background: var(--white);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding: 30px 32px;
     margin-bottom: 22px;
   }
-
-  .field-group label {
-    display: block;
-    font-family: var(--mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-soft);
-    margin-bottom: 6px;
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:22px;
   }
-
-  .row {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    align-items: flex-end;
+  .section-num{
+    font-size:13px;
+    font-weight:800;
+    color: var(--navy);
+    background: var(--yellow);
+    padding:3px 9px;
+    border-radius:6px;
+    letter-spacing:.02em;
   }
-
-  input, select {
-    font-family: var(--mono);
-    font-size: 15px;
-    padding: 10px 12px;
-    border: none;
-    border-bottom: 2px solid var(--ink);
-    background: transparent;
+  .section-title{
+    font-size:15px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.06em;
     color: var(--ink);
-    outline: none;
-    min-width: 160px;
   }
 
-  input::placeholder { color: #9a8f78; }
-  input:focus, select:focus { border-bottom-color: var(--stamp-red); }
-
-  button {
-    font-family: var(--mono);
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 11px 20px;
-    border: 1px solid var(--ledger-green);
-    background: var(--ledger-green);
-    color: #f6f2e9;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background 0.15s ease, transform 0.05s ease;
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 24px;
+    align-items:end;
   }
-  button:hover { background: var(--ledger-green-dark); }
-  button:active { transform: scale(0.98); }
+  .field label{
+    display:block;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color: var(--ink-soft);
+    margin-bottom:9px;
+  }
+  .field input, .field select{
+    width:100%;
+    border:none;
+    border-bottom: 2px solid var(--line);
+    background:transparent;
+    font-size:17px;
+    font-family: inherit;
+    color: var(--ink);
+    padding: 6px 2px 10px;
+    outline:none;
+    transition: border-color .15s ease;
+  }
+  .field input:focus, .field select:focus{
+    border-bottom-color: var(--navy);
+  }
+  .field select{ cursor:pointer; }
 
-  button.secondary {
+  button{
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    border-radius:8px;
+    padding: 14px 26px;
+    border:none;
+    cursor:pointer;
+    transition: transform .08s ease, filter .12s ease;
+    white-space:nowrap;
+  }
+  button:active{ transform: translateY(1px); }
+  button:disabled{ opacity:.55; cursor:not-allowed; }
+  .btn-primary{
+    background: var(--navy);
+    color: var(--white);
+  }
+  .btn-primary:hover{ background: var(--navy-2); }
+  .btn-accent{
+    background: var(--yellow);
+    color: var(--navy);
+  }
+  .btn-accent:hover{ filter: brightness(0.96); }
+  .btn-ghost{
     background: transparent;
-    color: var(--ledger-green);
+    color: var(--navy);
+    border: 2px solid var(--navy);
   }
-  button.secondary:hover { background: rgba(47,77,58,0.08); }
-
-  button.danger {
-    border-color: var(--stamp-red);
+  .btn-ghost:hover{ background: rgba(10,31,51,.05); }
+  .btn-danger{
     background: transparent;
-    color: var(--stamp-red);
+    color: var(--denim-btn);
+    border: 2px solid var(--denim-btn);
   }
-  button.danger:hover { background: rgba(156,59,47,0.08); }
+  .btn-danger:hover{ background: rgba(127,163,196,.1); }
 
-  section.entry {
-    border-top: 1px dashed var(--paper-line);
-    padding: 26px 0;
+  .notice{
+    margin-top:18px;
+    padding: 14px 18px;
+    border-radius:9px;
+    font-size:14px;
+    font-weight:600;
+    display:none;
   }
+  .notice.show{ display:block; }
+  .notice.ok{ background: var(--green-bg); color: var(--green); }
+  .notice.err{ background: var(--red-bg); color: var(--red); }
 
-  section.entry h2 {
-    font-family: var(--mono);
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+  /* ---------- balance ---------- */
+  .balance-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap: 24px;
+    flex-wrap:wrap;
+  }
+  .balance-label{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
     color: var(--ink-soft);
-    margin: 0 0 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    margin-bottom:10px;
   }
-
-  section.entry h2::before {
-    content: attr(data-mark);
-    color: var(--gold);
+  .balance-value{
+    font-size:44px;
+    font-weight:800;
+    letter-spacing:-.02em;
+    color: var(--navy);
+    font-variant-numeric: tabular-nums;
   }
-
-  .balance-display {
-    font-family: var(--mono);
-    font-size: 42px;
-    color: var(--ledger-green-dark);
-    margin: 4px 0 2px;
+  .balance-value span{ color: var(--ink-soft); font-weight:600; }
+  .account-select-wrap{
+    display:flex;
+    gap:14px;
+    align-items:flex-end;
   }
+  .account-select-wrap .field{ min-width:220px; }
 
-  .balance-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+  /* ---------- ledger ---------- */
+  table{ width:100%; border-collapse:collapse; }
+  thead th{
+    text-align:left;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
     color: var(--ink-soft);
+    padding: 0 0 12px;
+    border-bottom: 2px solid var(--line);
   }
-
-  .ledger-log {
-    font-family: var(--mono);
-    font-size: 13px;
-    max-height: 220px;
-    overflow-y: auto;
-    border: 1px solid var(--paper-line);
-    background: rgba(255,255,255,0.35);
-    border-radius: 4px;
+  tbody td{
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    font-size:15px;
   }
-
-  .ledger-row {
-    display: grid;
-    grid-template-columns: 90px 1fr auto;
-    gap: 10px;
-    padding: 9px 12px;
-    border-bottom: 1px solid var(--paper-line);
-    align-items: center;
-  }
-  .ledger-row:last-child { border-bottom: none; }
-  .ledger-row .time { color: var(--ink-soft); font-size: 11px; }
-  .ledger-row .amt.credit { color: var(--ledger-green-dark); }
-  .ledger-row .amt.debit { color: var(--stamp-red); }
-
-  .stamp {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 3px 8px;
-    border: 2px solid currentColor;
-    border-radius: 3px;
-    transform: rotate(-3deg);
-  }
-  .stamp.approved { color: var(--ledger-green-dark); }
-  .stamp.rejected { color: var(--stamp-red); }
-
-  .message-box {
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 12px 14px;
-    border-radius: 4px;
-    margin-top: 14px;
-    display: none;
-    white-space: pre-wrap;
-  }
-  .message-box.show { display: block; }
-  .message-box.success {
-    background: rgba(47,77,58,0.1);
-    color: var(--ledger-green-dark);
-    border: 1px solid rgba(47,77,58,0.3);
-  }
-  .message-box.error {
-    background: rgba(156,59,47,0.1);
-    color: var(--stamp-red);
-    border: 1px solid rgba(156,59,47,0.3);
-  }
-
-  footer.pages {
-    text-align: center;
-    font-family: var(--mono);
-    font-size: 10px;
+  tbody tr:last-child td{ border-bottom:none; }
+  .t-time{ color: var(--ink-soft); font-variant-numeric: tabular-nums; width:110px; }
+  .t-amt{ text-align:right; font-weight:700; font-variant-numeric: tabular-nums; }
+  .t-amt.pos{ color: var(--green); }
+  .t-amt.neg{ color: var(--red); }
+  .t-amt.neu{ color: var(--ink-soft); }
+  .empty-row td{
     color: var(--ink-soft);
-    letter-spacing: 0.1em;
-    padding: 18px 0 4px;
+    font-style:italic;
+    padding: 22px 0;
   }
 
-  @media (max-width: 560px) {
-    header.cover, main.pages { padding-left: 22px; padding-right: 22px; }
-    .status-pill { position: static; display: inline-block; margin-top: 12px; }
+  .footer-note{
+    text-align:center;
+    font-size:12px;
+    color: var(--ink-soft);
+    letter-spacing:.03em;
+    padding-top: 10px;
+  }
+  .footer-note .dash{ margin:0 10px; }
+
+  @media (max-width: 720px){
+    .grid{ grid-template-columns: 1fr; }
+    .balance-row{ flex-direction:column; align-items:flex-start; }
+    .account-select-wrap{ width:100%; }
+    .account-select-wrap .field{ flex:1; }
   }
 </style>
 </head>
 <body>
-  <div class="passbook">
-    <header class="cover">
-      <p class="eyebrow">TechSoft S.A. — Prototype</p>
-      <h1>Libreta de Ahorros</h1>
-      <p class="subtitle">Savings Account REST API · localhost:3000</p>
-      <span id="statusPill" class="status-pill offline">verificando conexión…</span>
-    </header>
 
-    <main class="pages">
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">$</div>
+      <div class="brand-text">
+        <div class="eyebrow">TechSoft S.A. · Prototipo</div>
+        <h1>Libreta de Ahorros</h1>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <span class="icon" id="themeIcon">🌙</span>
+        <span id="themeLabel">Modo oscuro</span>
+      </button>
+    </div>
+  </div>
+</div>
 
-      <section class="entry">
-        <h2 data-mark="§1">Abrir cuenta</h2>
-        <div class="row">
-          <div class="field-group">
-            <label for="ownerName">Titular</label>
-            <input id="ownerName" type="text" placeholder="Nombre completo" />
-          </div>
-          <div class="field-group">
-            <label for="initialBalance">Depósito inicial</label>
-            <input id="initialBalance" type="text" placeholder="0" />
-          </div>
-          <button id="btnCreate">Crear cuenta</button>
-        </div>
-        <div id="msgCreate" class="message-box"></div>
-      </section>
+<div class="page">
 
-      <section class="entry">
-        <h2 data-mark="§2">Cuenta activa</h2>
-        <div class="row">
-          <div class="field-group">
-            <label for="accountSelect">Seleccionar cuenta</label>
-            <select id="accountSelect"><option value="">— sin cuentas aún —</option></select>
-          </div>
-          <button id="btnRefreshAccounts" class="secondary">Actualizar lista</button>
-        </div>
-        <p class="balance-label">Saldo disponible</p>
-        <div class="balance-display" id="balanceDisplay">—</div>
-      </section>
-
-      <section class="entry">
-        <h2 data-mark="§3">Depositar</h2>
-        <div class="row">
-          <div class="field-group">
-            <label for="depositAmount">Monto</label>
-            <input id="depositAmount" type="text" placeholder="0" />
-          </div>
-          <button id="btnDeposit">Depositar</button>
-        </div>
-        <div id="msgDeposit" class="message-box"></div>
-      </section>
-
-      <section class="entry">
-        <h2 data-mark="§4">Retirar</h2>
-        <div class="row">
-          <div class="field-group">
-            <label for="withdrawAmount">Monto</label>
-            <input id="withdrawAmount" type="text" placeholder="0" />
-          </div>
-          <button id="btnWithdraw" class="danger">Retirar</button>
-        </div>
-        <div id="msgWithdraw" class="message-box"></div>
-      </section>
-
-      <section class="entry">
-        <h2 data-mark="§5">Movimientos de esta sesión</h2>
-        <div class="ledger-log" id="ledgerLog">
-          <div class="ledger-row"><span class="time">—</span><span>Sin movimientos todavía</span><span></span></div>
-        </div>
-      </section>
-
-    </main>
-
-    <footer class="pages">— fin de la libreta · registro generado localmente, no persiste al recargar —</footer>
+  <!-- §1 Abrir cuenta -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§1</span>
+      <span class="section-title">Abrir cuenta</span>
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label>Titular</label>
+        <input id="ownerInput" type="text" placeholder="Nombre completo">
+      </div>
+      <div class="field">
+        <label>Depósito inicial</label>
+        <input id="initDeposit" type="number" placeholder="0" min="0" step="0.01">
+      </div>
+      <button class="btn-primary" onclick="createAccount()">Crear cuenta</button>
+    </div>
+    <div id="createNotice" class="notice"></div>
   </div>
 
+  <!-- §2 Cuenta activa -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§2</span>
+      <span class="section-title">Cuenta activa</span>
+    </div>
+    <div class="account-select-wrap" style="margin-bottom:26px;">
+      <div class="field">
+        <label>Seleccionar cuenta</label>
+        <select id="accountSelect" onchange="renderBalance()"></select>
+      </div>
+      <button class="btn-ghost" onclick="refreshList()">Actualizar lista</button>
+    </div>
+    <div class="balance-row">
+      <div>
+        <div class="balance-label">Saldo disponible</div>
+        <div class="balance-value"><span>$</span> <span id="balanceValue">0,00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §3 Depositar -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§3</span>
+      <span class="section-title">Depositar</span>
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label>Monto</label>
+        <input id="depositAmt" type="number" placeholder="0" min="0" step="0.01">
+      </div>
+      <div></div>
+      <button class="btn-accent" onclick="deposit()">Depositar</button>
+    </div>
+    <div id="depositNotice" class="notice"></div>
+  </div>
+
+  <!-- §4 Retirar -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§4</span>
+      <span class="section-title">Retirar</span>
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label>Monto</label>
+        <input id="withdrawAmt" type="number" placeholder="0" min="0" step="0.01">
+      </div>
+      <div></div>
+      <button class="btn-danger" onclick="withdraw()">Retirar</button>
+    </div>
+    <div id="withdrawNotice" class="notice"></div>
+  </div>
+
+  <!-- §5 Movimientos -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§5</span>
+      <span class="section-title">Movimientos de esta sesión</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Hora</th><th>Movimiento</th><th style="text-align:right;">Monto</th></tr>
+      </thead>
+      <tbody id="ledgerBody">
+        <tr class="empty-row"><td colspan="3">Aún no hay movimientos en esta sesión.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer-note">fin de la libreta<span class="dash">—</span>los datos viven en el servidor mientras esté corriendo</div>
+
+</div>
+
 <script>
-  const API_BASE = window.location.origin + '/api/accounts';
+/*
+ * This frontend is a thin client: it does NOT store account data itself.
+ * Every action (create account, deposit, withdraw, balance check) calls
+ * the real REST API (src/routes/accountRoutes.js), so all business rules
+ * are validated on the server, not just in the browser.
+ */
+const API_BASE = window.location.origin + '/api/accounts';
 
-  const statusPill = document.getElementById('statusPill');
-  const accountSelect = document.getElementById('accountSelect');
-  const balanceDisplay = document.getElementById('balanceDisplay');
-  const ledgerLog = document.getElementById('ledgerLog');
+let accounts = {};      // local cache of accounts fetched from the API: id -> {id, owner, balance}
+let ledger = [];        // {time, label, amount, kind} - session-only log, not persisted
 
-  let ledgerEntries = [];
+function fmt(n){
+  return Number(n).toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
 
-  function showMessage(elId, type, text) {
-    const el = document.getElementById(elId);
-    el.textContent = text;
-    el.className = 'message-box show ' + type;
+function nowStr(){
+  const d = new Date();
+  return d.toLocaleTimeString('es-CO', {hour12:false});
+}
+
+function showNotice(id, msg, ok){
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'notice show ' + (ok ? 'ok' : 'err');
+}
+
+async function checkHealth(){
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  try{
+    const res = await fetch(window.location.origin + '/health');
+    if(!res.ok) throw new Error();
+    dot.classList.remove('offline');
+    text.textContent = 'conectado';
+  }catch(e){
+    dot.classList.add('offline');
+    text.textContent = 'sin conexión con el servidor';
+  }
+}
+
+async function refreshList(selectId){
+  try{
+    const res = await fetch(API_BASE);
+    const json = await res.json();
+    accounts = {};
+    (json.data || []).forEach(a => { accounts[a.id] = { id: a.id, owner: a.ownerName, balance: a.balance }; });
+  }catch(e){
+    accounts = {};
   }
 
-  function clearMessage(elId) {
-    const el = document.getElementById(elId);
-    el.className = 'message-box';
+  const sel = document.getElementById('accountSelect');
+  const current = selectId !== undefined ? String(selectId) : sel.value;
+  sel.innerHTML = '';
+  const ids = Object.keys(accounts);
+  if(ids.length === 0){
+    const opt = document.createElement('option');
+    opt.textContent = 'Sin cuentas creadas';
+    opt.value = '';
+    sel.appendChild(opt);
+  } else {
+    ids.forEach(id => {
+      const acc = accounts[id];
+      const opt = document.createElement('option');
+      opt.value = id;
+      opt.textContent = `#${acc.id} — ${acc.owner}`;
+      sel.appendChild(opt);
+    });
+    if(ids.includes(current)) sel.value = current;
   }
+  renderBalance();
+}
 
-  function addLedgerEntry(label, amountText, kind) {
-    ledgerEntries.unshift({ time: new Date().toLocaleTimeString(), label, amountText, kind });
-    renderLedger();
-  }
+function renderBalance(){
+  const sel = document.getElementById('accountSelect');
+  const acc = accounts[sel.value];
+  document.getElementById('balanceValue').textContent = acc ? fmt(acc.balance) : '0,00';
+}
 
-  function renderLedger() {
-    if (ledgerEntries.length === 0) {
-      ledgerLog.innerHTML = '<div class="ledger-row"><span class="time">—</span><span>Sin movimientos todavía</span><span></span></div>';
+async function createAccount(){
+  const owner = document.getElementById('ownerInput').value.trim();
+  const initRaw = document.getElementById('initDeposit').value;
+
+  try{
+    const body = { ownerName: owner };
+    if(initRaw !== '') body.initialBalance = Number(initRaw);
+
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const json = await res.json();
+
+    if(!res.ok || !json.success){
+      showNotice('createNotice', json.message || 'No fue posible crear la cuenta.', false);
       return;
     }
-    ledgerLog.innerHTML = ledgerEntries.map(e => `
-      <div class="ledger-row">
-        <span class="time">${e.time}</span>
-        <span>${e.label}</span>
-        <span class="amt ${e.kind}">${e.amountText}</span>
-      </div>
-    `).join('');
+
+    addLedger(`Apertura de cuenta #${json.data.id}`, json.data.balance, 'neu');
+    showNotice('createNotice', `Cuenta creada — #${json.data.id} · ${json.data.ownerName}`, true);
+
+    document.getElementById('ownerInput').value = '';
+    document.getElementById('initDeposit').value = '';
+
+    await refreshList(json.data.id);
+  }catch(e){
+    showNotice('createNotice', 'No fue posible conectar con el servidor.', false);
+  }
+}
+
+async function deposit(){
+  const sel = document.getElementById('accountSelect');
+  const accId = sel.value;
+  const amtRaw = document.getElementById('depositAmt').value;
+
+  if(!accId){
+    showNotice('depositNotice', 'Selecciona una cuenta activa primero.', false);
+    return;
   }
 
-  async function checkHealth() {
-    try {
-      const res = await fetch(window.location.origin + '/health');
-      if (!res.ok) throw new Error();
-      statusPill.textContent = 'conectado';
-      statusPill.className = 'status-pill online';
-    } catch (e) {
-      statusPill.textContent = 'sin conexión con el servidor';
-      statusPill.className = 'status-pill offline';
+  try{
+    const res = await fetch(`${API_BASE}/${accId}/deposit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: Number(amtRaw) })
+    });
+    const json = await res.json();
+
+    if(!res.ok || !json.success){
+      showNotice('depositNotice', json.message || 'Depósito rechazado.', false);
+      addLedger('Depósito rechazado', 0, 'neg');
+      return;
     }
+
+    showNotice('depositNotice', `Aprobado — nuevo saldo: $ ${fmt(json.data.newBalance)}`, true);
+    addLedger('Depósito', json.data.amount, 'pos');
+    document.getElementById('depositAmt').value = '';
+    await refreshList(accId);
+  }catch(e){
+    showNotice('depositNotice', 'No fue posible conectar con el servidor.', false);
+  }
+}
+
+async function withdraw(){
+  const sel = document.getElementById('accountSelect');
+  const accId = sel.value;
+  const amtRaw = document.getElementById('withdrawAmt').value;
+
+  if(!accId){
+    showNotice('withdrawNotice', 'Selecciona una cuenta activa primero.', false);
+    return;
   }
 
-  async function loadAccounts(selectId) {
-    try {
-      const res = await fetch(API_BASE);
-      const json = await res.json();
-      const accounts = json.data || [];
-      if (accounts.length === 0) {
-        accountSelect.innerHTML = '<option value="">— sin cuentas aún —</option>';
-        balanceDisplay.textContent = '—';
-        return;
-      }
-      accountSelect.innerHTML = accounts
-        .map(a => `<option value="${a.id}">#${a.id} — ${a.ownerName}</option>`)
-        .join('');
-      if (selectId) accountSelect.value = String(selectId);
-      await refreshBalance();
-    } catch (e) {
-      statusPill.textContent = 'sin conexión con el servidor';
-      statusPill.className = 'status-pill offline';
+  try{
+    const res = await fetch(`${API_BASE}/${accId}/withdraw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: Number(amtRaw) })
+    });
+    const json = await res.json();
+
+    if(!res.ok || !json.success){
+      showNotice('withdrawNotice', json.message || 'Retiro rechazado.', false);
+      addLedger('Retiro rechazado', 0, 'neg');
+      return;
     }
+
+    showNotice('withdrawNotice', `Aprobado — nuevo saldo: $ ${fmt(json.data.newBalance)}`, true);
+    addLedger('Retiro', -json.data.amount, 'neg');
+    document.getElementById('withdrawAmt').value = '';
+    await refreshList(accId);
+  }catch(e){
+    showNotice('withdrawNotice', 'No fue posible conectar con el servidor.', false);
   }
+}
 
-  async function refreshBalance() {
-    const id = accountSelect.value;
-    if (!id) { balanceDisplay.textContent = '—'; return; }
-    try {
-      const res = await fetch(`${API_BASE}/${id}/balance`);
-      const json = await res.json();
-      if (json.success) {
-        balanceDisplay.textContent = formatMoney(json.data.balance);
-      } else {
-        balanceDisplay.textContent = '—';
-      }
-    } catch (e) {
-      balanceDisplay.textContent = '—';
-    }
+function addLedger(label, amount, kind){
+  ledger.unshift({ time: nowStr(), label, amount, kind });
+  renderLedger();
+}
+
+function renderLedger(){
+  const body = document.getElementById('ledgerBody');
+  if(ledger.length === 0){
+    body.innerHTML = '<tr class="empty-row"><td colspan="3">Aún no hay movimientos en esta sesión.</td></tr>';
+    return;
   }
+  body.innerHTML = ledger.map(entry => {
+    const sign = entry.kind === 'pos' ? '+ ' : entry.kind === 'neg' ? '− ' : '';
+    return `<tr>
+      <td class="t-time">${entry.time}</td>
+      <td>${entry.label}</td>
+      <td class="t-amt ${entry.kind}">${sign}$ ${fmt(Math.abs(entry.amount))}</td>
+    </tr>`;
+  }).join('');
+}
 
-  function formatMoney(value) {
-    return '$ ' + Number(value).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function toggleTheme(){
+  const root = document.documentElement;
+  const isDark = root.getAttribute('data-theme') === 'dark';
+  if(isDark){
+    root.removeAttribute('data-theme');
+    document.getElementById('themeIcon').textContent = '🌙';
+    document.getElementById('themeLabel').textContent = 'Modo oscuro';
+  } else {
+    root.setAttribute('data-theme', 'dark');
+    document.getElementById('themeIcon').textContent = '☀️';
+    document.getElementById('themeLabel').textContent = 'Modo claro';
   }
+}
 
-  document.getElementById('btnCreate').addEventListener('click', async () => {
-    clearMessage('msgCreate');
-    const ownerName = document.getElementById('ownerName').value.trim();
-    const initialBalance = document.getElementById('initialBalance').value.trim();
-
-    try {
-      const body = { ownerName };
-      if (initialBalance !== '') body.initialBalance = Number(initialBalance);
-
-      const res = await fetch(API_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      const json = await res.json();
-
-      if (!res.ok || !json.success) {
-        showMessage('msgCreate', 'error', 'Rechazado — ' + json.message);
-        return;
-      }
-
-      showMessage('msgCreate', 'success', 'Cuenta creada — #' + json.data.id + ' · ' + json.data.ownerName);
-      document.getElementById('ownerName').value = '';
-      document.getElementById('initialBalance').value = '';
-      addLedgerEntry('Apertura de cuenta #' + json.data.id, formatMoney(json.data.balance), 'credit');
-      await loadAccounts(json.data.id);
-    } catch (e) {
-      showMessage('msgCreate', 'error', 'No fue posible conectar con el servidor.');
-    }
-  });
-
-  document.getElementById('btnRefreshAccounts').addEventListener('click', () => loadAccounts());
-  accountSelect.addEventListener('change', refreshBalance);
-
-  document.getElementById('btnDeposit').addEventListener('click', async () => {
-    clearMessage('msgDeposit');
-    const id = accountSelect.value;
-    const amount = document.getElementById('depositAmount').value.trim();
-
-    if (!id) { showMessage('msgDeposit', 'error', 'Primero selecciona o crea una cuenta.'); return; }
-
-    try {
-      const res = await fetch(`${API_BASE}/${id}/deposit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: Number(amount) })
-      });
-      const json = await res.json();
-
-      if (!res.ok || !json.success) {
-        showMessage('msgDeposit', 'error', 'Rechazado — ' + json.message);
-        addLedgerEntry('Depósito rechazado', json.message, 'debit');
-        return;
-      }
-
-      showMessage('msgDeposit', 'success', 'Aprobado — nuevo saldo: ' + formatMoney(json.data.newBalance));
-      document.getElementById('depositAmount').value = '';
-      addLedgerEntry('Depósito', '+ ' + formatMoney(json.data.amount), 'credit');
-      await refreshBalance();
-    } catch (e) {
-      showMessage('msgDeposit', 'error', 'No fue posible conectar con el servidor.');
-    }
-  });
-
-  document.getElementById('btnWithdraw').addEventListener('click', async () => {
-    clearMessage('msgWithdraw');
-    const id = accountSelect.value;
-    const amount = document.getElementById('withdrawAmount').value.trim();
-
-    if (!id) { showMessage('msgWithdraw', 'error', 'Primero selecciona o crea una cuenta.'); return; }
-
-    try {
-      const res = await fetch(`${API_BASE}/${id}/withdraw`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: Number(amount) })
-      });
-      const json = await res.json();
-
-      if (!res.ok || !json.success) {
-        showMessage('msgWithdraw', 'error', 'Rechazado — ' + json.message);
-        addLedgerEntry('Retiro rechazado', json.message, 'debit');
-        return;
-      }
-
-      showMessage('msgWithdraw', 'success', 'Aprobado — nuevo saldo: ' + formatMoney(json.data.newBalance));
-      document.getElementById('withdrawAmount').value = '';
-      addLedgerEntry('Retiro', '− ' + formatMoney(json.data.amount), 'debit');
-      await refreshBalance();
-    } catch (e) {
-      showMessage('msgWithdraw', 'error', 'No fue posible conectar con el servidor.');
-    }
-  });
-
-  checkHealth();
-  loadAccounts();
+checkHealth();
+refreshList();
 </script>
+
 </body>
 </html>
