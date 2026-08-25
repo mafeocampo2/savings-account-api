@@ -251,14 +251,22 @@
   .btn-danger:hover{ background: rgba(127,163,196,.1); }
 
   .notice{
-    margin-top:18px;
-    padding: 14px 18px;
+    margin-top:0;
+    padding: 0 18px;
+    max-height: 0;
     border-radius:9px;
     font-size:14px;
     font-weight:600;
-    display:none;
+    opacity: 0;
+    overflow: hidden;
+    transition: opacity .4s ease, max-height .4s ease, margin-top .4s ease, padding .4s ease;
   }
-  .notice.show{ display:block; }
+  .notice.show{
+    margin-top:18px;
+    padding: 14px 18px;
+    max-height: 200px;
+    opacity: 1;
+  }
   .notice.ok{ background: var(--green-bg); color: var(--green); }
   .notice.err{ background: var(--red-bg); color: var(--red); }
 
@@ -480,10 +488,17 @@ function nowStr(){
   return d.toLocaleTimeString('es-CO', {hour12:false});
 }
 
+const noticeTimers = {};
+
 function showNotice(id, msg, ok){
   const el = document.getElementById(id);
   el.textContent = msg;
   el.className = 'notice show ' + (ok ? 'ok' : 'err');
+
+  if(noticeTimers[id]) clearTimeout(noticeTimers[id]);
+  noticeTimers[id] = setTimeout(() => {
+    el.classList.remove('show');
+  }, 10000);
 }
 
 async function checkHealth(){
