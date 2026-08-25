@@ -71,6 +71,7 @@ calls the same REST endpoints described below via `fetch`.
 | GET    | `/api/accounts/:id/balance`         | Check the balance                |
 | POST   | `/api/accounts/:id/deposit`         | Deposit money                    |
 | POST   | `/api/accounts/:id/withdraw`        | Withdraw money                   |
+| DELETE | `/api/accounts/:id`                 | Delete an account                |
 
 ### Example: create an account
 

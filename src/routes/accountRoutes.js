@@ -21,4 +21,7 @@ router.post('/:id/deposit', accountController.deposit);
 // POST /api/accounts/:id/withdraw -> withdraw money
 router.post('/:id/withdraw', accountController.withdraw);
 
+// DELETE /api/accounts/:id -> delete an account
+router.delete('/:id', accountController.deleteAccount);
+
 module.exports = router;

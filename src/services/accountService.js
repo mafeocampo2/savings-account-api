@@ -86,6 +86,13 @@ class AccountService {
       newBalance: account.balance,
     };
   }
+
+  deleteAccount(id) {
+    // Reuses getAccountById so it throws a 404 AppError if the account doesn't exist.
+    const account = this.getAccountById(id);
+    accountRepository.delete(account.id);
+    return { accountId: account.id, deleted: true };
+  }
 }
 
 module.exports = new AccountService();

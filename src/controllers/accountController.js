@@ -72,6 +72,19 @@ function withdraw(req, res, next) {
   }
 }
 
+function deleteAccount(req, res, next) {
+  try {
+    const result = accountService.deleteAccount(req.params.id);
+    return res.status(200).json({
+      success: true,
+      message: 'Account deleted successfully.',
+      data: result,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   createAccount,
   getAccount,
@@ -79,4 +92,5 @@ module.exports = {
   getBalance,
   deposit,
   withdraw,
+  deleteAccount,
 };

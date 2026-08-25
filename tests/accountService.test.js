@@ -45,3 +45,14 @@ test('should never allow a negative balance', () => {
   assert.throws(() => accountService.withdraw(account.id, { amount: 1 }));
   assert.equal(account.balance, 0);
 });
+
+test('should delete an existing account', () => {
+  const account = accountService.createAccount({ ownerName: 'Diego', initialBalance: 20 });
+  const result = accountService.deleteAccount(account.id);
+  assert.equal(result.deleted, true);
+  assert.throws(() => accountService.getAccountById(account.id), /was not found/);
+});
+
+test('should reject deleting a non-existent account', () => {
+  assert.throws(() => accountService.deleteAccount('99999'), /was not found/);
+});

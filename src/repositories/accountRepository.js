@@ -30,6 +30,10 @@ class AccountRepository {
     this.accounts.set(account.id, account);
     return account;
   }
+
+  delete(id) {
+    return this.accounts.delete(id);
+  }
 }
 
 // Singleton instance shared across the app (simple approach for a prototype)

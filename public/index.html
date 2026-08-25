@@ -400,7 +400,9 @@
         <div class="balance-label">Saldo disponible</div>
         <div class="balance-value"><span>$</span> <span id="balanceValue">0,00</span></div>
       </div>
+      <button class="btn-danger" onclick="deleteAccount()">Eliminar cuenta</button>
     </div>
+    <div id="deleteNotice" class="notice"></div>
   </div>
 
   <!-- §3 Depositar -->
@@ -557,12 +559,10 @@ async function createAccount(){
     }
 
     addLedger(`Apertura de cuenta #${json.data.id}`, json.data.balance, 'neu');
-    showNotice('createNotice', `Cuenta creada — #${json.data.id} · ${json.data.ownerName}`, true);
+    showNotice('createNotice', `Cuenta creada — #${json.data.id} · ${json.data.ownerName}. Pulsa "Actualizar lista" para verla en el selector.`, true);
 
     document.getElementById('ownerInput').value = '';
     document.getElementById('initDeposit').value = '';
-
-    await refreshList(json.data.id);
   }catch(e){
     showNotice('createNotice', 'No fue posible conectar con el servidor.', false);
   }
@@ -592,10 +592,9 @@ async function deposit(){
       return;
     }
 
-    showNotice('depositNotice', `Aprobado — nuevo saldo: $ ${fmt(json.data.newBalance)}`, true);
+    showNotice('depositNotice', `Aprobado — nuevo saldo: $ ${fmt(json.data.newBalance)}. Pulsa "Actualizar lista" para reflejarlo arriba.`, true);
     addLedger('Depósito', json.data.amount, 'pos');
     document.getElementById('depositAmt').value = '';
-    await refreshList(accId);
   }catch(e){
     showNotice('depositNotice', 'No fue posible conectar con el servidor.', false);
   }
@@ -625,12 +624,39 @@ async function withdraw(){
       return;
     }
 
-    showNotice('withdrawNotice', `Aprobado — nuevo saldo: $ ${fmt(json.data.newBalance)}`, true);
+    showNotice('withdrawNotice', `Aprobado — nuevo saldo: $ ${fmt(json.data.newBalance)}. Pulsa "Actualizar lista" para reflejarlo arriba.`, true);
     addLedger('Retiro', -json.data.amount, 'neg');
     document.getElementById('withdrawAmt').value = '';
-    await refreshList(accId);
   }catch(e){
     showNotice('withdrawNotice', 'No fue posible conectar con el servidor.', false);
+  }
+}
+
+async function deleteAccount(){
+  const sel = document.getElementById('accountSelect');
+  const accId = sel.value;
+
+  if(!accId){
+    showNotice('deleteNotice', 'Selecciona una cuenta activa primero.', false);
+    return;
+  }
+
+  const acc = accounts[accId];
+  const label = acc ? `#${acc.id} · ${acc.owner}` : `#${accId}`;
+
+  try{
+    const res = await fetch(`${API_BASE}/${accId}`, { method: 'DELETE' });
+    const json = await res.json();
+
+    if(!res.ok || !json.success){
+      showNotice('deleteNotice', json.message || 'No fue posible eliminar la cuenta.', false);
+      return;
+    }
+
+    showNotice('deleteNotice', `Cuenta ${label} eliminada. Pulsa "Actualizar lista" para quitarla del selector.`, true);
+    addLedger(`Cierre de cuenta ${label}`, 0, 'neu');
+  }catch(e){
+    showNotice('deleteNotice', 'No fue posible conectar con el servidor.', false);
   }
 }
 

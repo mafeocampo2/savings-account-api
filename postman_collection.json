@@ -47,6 +47,13 @@
       }
     },
     {
+      "name": "Delete Account",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/accounts/{{accountId}}"
+      }
+    },
+    {
       "name": "Withdraw",
       "request": {
         "method": "POST",
