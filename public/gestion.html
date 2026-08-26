@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Libreta de Ahorros — Gestión de cuenta</title>
+  <link rel="stylesheet" href="estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark">$</div>
+        <div class="brand-text">
+          <div class="eyebrow">TechSoft S.A. · Prototipo</div>
+          <h1>Libreta de Ahorros</h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span class="icon" id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="secondary-nav">
+    <div class="secondary-nav-inner">
+      <a href="index.html" class="nav-back">‹ Volver</a>
+      <span class="nav-separator">—</span>
+      <div class="nav-title" id="navTitle">Gestión de cuenta</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Balance -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px;">
+        <div>
+          <div class="balance-label">Saldo disponible</div>
+          <div class="balance-value"><span>$</span> <span id="balanceValue">0,00</span></div>
+        </div>
+        <div style="text-align: right;">
+          <div class="account-name" id="ownerName">—</div>
+          <div class="account-id" id="accountId">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card">
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="#" id="depositBtn" class="btn-success" style="text-decoration: none;">💰 Depositar</a>
+        <a href="#" id="withdrawBtn" class="btn-danger" style="text-decoration: none;">💸 Retirar</a>
+        <button class="btn-secondary" onclick="deleteAccountConfirm()" style="margin-left: auto;">🗑️ Eliminar cuenta</button>
+      </div>
+      <div id="deleteNotice" class="notice"></div>
+    </div>
+
+    <!-- Movements -->
+    <div class="card">
+      <div style="margin-bottom: 20px;">
+        <h3 style="margin: 0; font-size: 14px; text-transform: uppercase; font-weight: 700; color: var(--ink); letter-spacing: 0.06em;">Movimientos</h3>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Movimiento</th>
+            <th style="text-align: right;">Monto</th>
+          </tr>
+        </thead>
+        <tbody id="ledgerBody">
+          <tr class="empty-row">
+            <td colspan="3">Cargando movimientos…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="text-align: center; font-size: 12px; color: var(--ink-soft); margin-top: 32px;">
+      Los datos viven en el servidor mientras esté corriendo
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    const accountId = getParam('cuenta');
+    let currentAccount = null;
+
+    async function init() {
+      if (!accountId) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      checkHealth();
+      await loadAccount();
+      setInterval(checkHealth, 30000);
+      setInterval(loadAccount, 10000);
+    }
+
+    async function loadAccount() {
+      const account = await getAccount(accountId);
+      if (!account) {
+        document.querySelector('.container').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">❌</div>
+            <div class="empty-state-title">Cuenta no encontrada</div>
+            <div class="empty-state-text">La cuenta que buscas no existe o fue eliminada.</div>
+            <a href="index.html" class="btn-primary" style="text-decoration: none; display: inline-block;">← Volver al inicio</a>
+          </div>
+        `;
+        return;
+      }
+
+      currentAccount = account;
+      document.getElementById('balanceValue').textContent = formatCOP(account.balance);
+      document.getElementById('ownerName').textContent = account.owner;
+      document.getElementById('accountId').textContent = '#' + String(account.id).padStart(3, '0');
+      document.getElementById('depositBtn').href = `accion.html?cuenta=${account.id}&tipo=deposito`;
+      document.getElementById('withdrawBtn').href = `accion.html?cuenta=${account.id}&tipo=retiro`;
+    }
+
+    function deleteAccountConfirm() {
+      if (!currentAccount) return;
+      const confirmed = confirm(`¿Estás seguro de que deseas eliminar la cuenta #${String(currentAccount.id).padStart(3, '0')} de ${currentAccount.owner}? Esta acción no se puede deshacer.`);
+      if (!confirmed) return;
+
+      deleteAccountAction();
+    }
+
+    async function deleteAccountAction() {
+      const btn = event.target;
+      btn.disabled = true;
+
+      const result = await deleteAccount(accountId);
+      const notice = document.getElementById('deleteNotice');
+
+      if (result.success) {
+        notice.textContent = 'Cuenta eliminada. Redirigiendo…';
+        notice.className = 'notice show ok';
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1500);
+      } else {
+        notice.textContent = result.message;
+        notice.className = 'notice show err';
+        btn.disabled = false;
+      }
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        root.removeAttribute('data-theme');
+        document.getElementById('themeIcon').textContent = '🌙';
+      } else {
+        root.setAttribute('data-theme', 'dark');
+        document.getElementById('themeIcon').textContent = '☀️';
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

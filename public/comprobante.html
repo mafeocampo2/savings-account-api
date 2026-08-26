@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Libreta de Ahorros — Comprobante</title>
+  <link rel="stylesheet" href="estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark">$</div>
+        <div class="brand-text">
+          <div class="eyebrow">TechSoft S.A. · Prototipo</div>
+          <h1>Libreta de Ahorros</h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span class="icon" id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="secondary-nav">
+    <div class="secondary-nav-inner">
+      <div class="nav-title">Comprobante</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="receipt">
+        <div class="receipt-icon">✓</div>
+        <div class="receipt-title" id="actionTitle">Depósito completado</div>
+        <div class="receipt-amount" id="amount">$ 0,00</div>
+
+        <div class="receipt-details">
+          <div class="receipt-detail">
+            <span class="receipt-detail-label">Cuenta</span>
+            <span class="receipt-detail-value" id="detailAccount">—</span>
+          </div>
+          <div class="receipt-detail">
+            <span class="receipt-detail-label">Saldo anterior</span>
+            <span class="receipt-detail-value" id="detailBefore">$ 0,00</span>
+          </div>
+          <div class="receipt-detail">
+            <span class="receipt-detail-label">Saldo actual</span>
+            <span class="receipt-detail-value" id="detailAfter">$ 0,00</span>
+          </div>
+          <div class="receipt-detail">
+            <span class="receipt-detail-label">Número de comprobante</span>
+            <span class="receipt-detail-value" id="detailReceipt">—</span>
+          </div>
+          <div class="receipt-detail">
+            <span class="receipt-detail-label">Fecha y hora</span>
+            <span class="receipt-detail-value" id="detailTime">—</span>
+          </div>
+        </div>
+
+        <a href="#" id="returnBtn" class="btn-primary" style="text-decoration: none; display: inline-block; margin-top: 32px;">← Volver a gestión de cuenta</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    let receipt = null;
+
+    async function init() {
+      const stored = sessionStorage.getItem('receipt');
+      if (!stored) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      receipt = JSON.parse(stored);
+      const { accountId, type, amount, newBalance, timestamp } = receipt;
+
+      if (!accountId) {
+        sessionStorage.removeItem('receipt');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Set up UI
+      const isDeposit = type === 'deposito';
+      document.getElementById('actionTitle').textContent = isDeposit ? 'Depósito completado' : 'Retiro completado';
+      document.getElementById('amount').textContent = (isDeposit ? '+ ' : '− ') + '$ ' + formatCOP(amount);
+      document.getElementById('returnBtn').href = `gestion.html?cuenta=${accountId}`;
+
+      checkHealth();
+      await loadAccount();
+      setInterval(checkHealth, 30000);
+    }
+
+    async function loadAccount() {
+      const { accountId, amount, newBalance, timestamp } = receipt;
+      const account = await getAccount(accountId);
+
+      if (!account) {
+        sessionStorage.removeItem('receipt');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const before = newBalance - amount * (receipt.type === 'deposito' ? 1 : -1);
+
+      document.getElementById('detailAccount').textContent = `#${String(account.id).padStart(3, '0')} · ${account.owner}`;
+      document.getElementById('detailBefore').textContent = '$ ' + formatCOP(before);
+      document.getElementById('detailAfter').textContent = '$ ' + formatCOP(newBalance);
+      document.getElementById('detailReceipt').textContent = generateReceiptNumber();
+      document.getElementById('detailTime').textContent = timestamp;
+    }
+
+    function generateReceiptNumber() {
+      // Generate a consistent receipt number based on timestamp and random
+      const base = Math.floor(Date.now() / 1000).toString(36).toUpperCase();
+      const rand = Math.floor(Math.random() * 10000).toString(36).toUpperCase().padStart(4, '0');
+      return base + rand;
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        root.removeAttribute('data-theme');
+        document.getElementById('themeIcon').textContent = '🌙';
+      } else {
+        root.setAttribute('data-theme', 'dark');
+        document.getElementById('themeIcon').textContent = '☀️';
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

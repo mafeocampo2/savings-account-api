@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Libreta de Ahorros — Abrir cuenta</title>
+  <link rel="stylesheet" href="estilos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark">$</div>
+        <div class="brand-text">
+          <div class="eyebrow">TechSoft S.A. · Prototipo</div>
+          <h1>Libreta de Ahorros</h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span class="icon" id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="secondary-nav">
+    <div class="secondary-nav-inner">
+      <a href="index.html" class="nav-back">‹ Volver</a>
+      <span class="nav-separator">—</span>
+      <div class="nav-title">Abrir cuenta</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="grid full">
+        <div class="field">
+          <label>Titular</label>
+          <input id="ownerInput" type="text" placeholder="Nombre completo">
+        </div>
+        <div class="field">
+          <label>Depósito inicial (opcional)</label>
+          <input id="depositInput" type="number" placeholder="0" min="0" step="0.01">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 32px;">
+        <button class="btn-primary" onclick="createAccount()">Crear cuenta</button>
+        <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Cancelar</a>
+      </div>
+
+      <div id="notice" class="notice"></div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    async function init() {
+      checkHealth();
+      setInterval(checkHealth, 30000);
+    }
+
+    async function createAccount() {
+      const ownerInput = document.getElementById('ownerInput');
+      const depositInput = document.getElementById('depositInput');
+      const notice = document.getElementById('notice');
+
+      const owner = ownerInput.value.trim();
+      const deposit = parseFloat(depositInput.value) || 0;
+
+      if (!owner) {
+        notice.textContent = 'Por favor ingresa el nombre del titular.';
+        notice.className = 'notice show err';
+        return;
+      }
+
+      const button = event.target;
+      button.disabled = true;
+
+      const result = await createAccount_(owner, deposit);
+
+      if (result.success) {
+        notice.textContent = result.message + '. Redirigiendo…';
+        notice.className = 'notice show ok';
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1500);
+      } else {
+        notice.textContent = result.message;
+        notice.className = 'notice show err';
+        button.disabled = false;
+      }
+    }
+
+    async function createAccount_(ownerName, initialBalance) {
+      try {
+        const body = { ownerName };
+        if (initialBalance > 0) body.initialBalance = initialBalance;
+
+        const res = await fetch(window.location.origin + '/api/accounts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        const json = await res.json();
+        if (!res.ok || !json.success) {
+          return { success: false, message: json.message || 'No fue posible crear la cuenta.' };
+        }
+
+        return {
+          success: true,
+          data: json.data,
+          message: `Cuenta creada — #${json.data.id}`
+        };
+      } catch (e) {
+        return { success: false, message: 'No fue posible conectar con el servidor.' };
+      }
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        root.removeAttribute('data-theme');
+        document.getElementById('themeIcon').textContent = '🌙';
+      } else {
+        root.setAttribute('data-theme', 'dark');
+        document.getElementById('themeIcon').textContent = '☀️';
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
