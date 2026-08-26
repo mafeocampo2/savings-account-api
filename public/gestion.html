@@ -51,9 +51,9 @@
 
     <!-- Actions -->
     <div class="card">
-      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <a href="#" id="depositBtn" class="btn-success"><span class="btn-icon">↓</span> Depositar</a>
-        <a href="#" id="withdrawBtn" class="btn-danger"><span class="btn-icon">↑</span> Retirar</a>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <button id="depositBtn" class="btn-success" onclick="goDeposit()"><span class="btn-icon">↓</span> Depositar</button>
+        <button id="withdrawBtn" class="btn-danger" onclick="goWithdraw()"><span class="btn-icon">↑</span> Retirar</button>
         <button class="btn-secondary" onclick="deleteAccountConfirm()" style="margin-left: auto;"><span class="btn-icon">×</span> Eliminar cuenta</button>
       </div>
       <div id="deleteNotice" class="notice"></div>
@@ -120,8 +120,14 @@
       document.getElementById('balanceValue').textContent = formatCOP(account.balance);
       document.getElementById('ownerName').textContent = account.owner;
       document.getElementById('accountId').textContent = '#' + String(account.id).padStart(3, '0');
-      document.getElementById('depositBtn').href = `accion.html?cuenta=${account.id}&tipo=deposito`;
-      document.getElementById('withdrawBtn').href = `accion.html?cuenta=${account.id}&tipo=retiro`;
+    }
+
+    function goDeposit() {
+      window.location.href = `accion.html?cuenta=${accountId}&tipo=deposito`;
+    }
+
+    function goWithdraw() {
+      window.location.href = `accion.html?cuenta=${accountId}&tipo=retiro`;
     }
 
     function deleteAccountConfirm() {
