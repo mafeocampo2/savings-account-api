@@ -173,6 +173,14 @@ async function deleteAccount(accountId) {
   }
 }
 
+// Parse number with thousand separators (. or ,)
+function parseAmount(str) {
+  if (!str) return 0;
+  // Remove thousand separators and normalize decimal separator
+  const cleaned = String(str).replace(/\./g, '').replace(/,/g, '.');
+  return parseFloat(cleaned) || 0;
+}
+
 // Get URL parameter
 function getParam(name) {
   const params = new URLSearchParams(window.location.search);

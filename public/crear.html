@@ -69,7 +69,7 @@
       const notice = document.getElementById('notice');
 
       const owner = ownerInput.value.trim();
-      const deposit = parseFloat(depositInput.value) || 0;
+      const deposit = parseAmount(depositInput.value);
 
       if (!owner) {
         notice.textContent = 'Por favor ingresa el nombre del titular.';

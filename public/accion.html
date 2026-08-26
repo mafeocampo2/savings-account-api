@@ -134,7 +134,7 @@
     function updatePreview() {
       if (!currentAccount) return;
 
-      const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+      const amount = parseAmount(document.getElementById('amountInput').value);
       const isDeposit = actionType === 'deposito';
       const final = isDeposit ? currentAccount.balance + amount : currentAccount.balance - amount;
 
@@ -146,7 +146,7 @@
     }
 
     function goToConfirmation() {
-      const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+      const amount = parseAmount(document.getElementById('amountInput').value);
       if (amount <= 0) return;
 
       // Store in session storage temporarily
