@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Libreta de Ahorros - Presentación</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1C1B2E 0%, #332F4A 100%);
+      color: #333;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slides-container {
+      width: 90%;
+      max-width: 1000px;
+      aspect-ratio: 16/9;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+      display: flex;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 60px;
+      animation: slideIn 0.5s ease-in-out;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Slide styles */
+    .slide h1 {
+      font-size: 3.5rem;
+      color: #332F4A;
+      margin-bottom: 20px;
+    }
+
+    .slide h2 {
+      font-size: 2.5rem;
+      color: #332F4A;
+      margin-bottom: 30px;
+      border-bottom: 3px solid #146D34;
+      padding-bottom: 15px;
+    }
+
+    .slide p {
+      font-size: 1.3rem;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 15px;
+    }
+
+    .slide ul {
+      font-size: 1.2rem;
+      line-height: 2;
+      color: #555;
+      margin-left: 30px;
+    }
+
+    .slide li {
+      margin-bottom: 10px;
+    }
+
+    .slide .subtitle {
+      font-size: 1.8rem;
+      color: #146D34;
+      margin-top: 30px;
+    }
+
+    .slide.title-slide {
+      background: linear-gradient(135deg, #1C1B2E 0%, #332F4A 100%);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .slide.title-slide h1 {
+      color: white;
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .slide.title-slide p {
+      color: #A9BFD8;
+      font-size: 1.5rem;
+    }
+
+    .controls {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 100;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      background: #146D34;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #0f5226;
+      transform: scale(1.05);
+    }
+
+    .slide-counter {
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      font-size: 1.1rem;
+      color: white;
+      background: rgba(0,0,0,0.3);
+      padding: 10px 20px;
+      border-radius: 6px;
+    }
+
+    .code-block {
+      background: #f4f5f8;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #146D34;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      overflow-x: auto;
+      margin: 15px 0;
+    }
+
+    .highlight {
+      color: #146D34;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<div class="slides-container">
+  <!-- Slide 1: Portada -->
+  <div class="slide active title-slide">
+    <h1>💰 Libreta de Ahorros</h1>
+    <p>Aplicación Bancaria Web - Frontend + API REST</p>
+    <p style="margin-top: 40px; font-size: 1.2rem;">Desarrollado con HTML, CSS, JavaScript y Node.js</p>
+  </div>
+
+  <!-- Slide 2: Descripción del Proyecto -->
+  <div class="slide">
+    <h2>¿Qué es?</h2>
+    <p><span class="highlight">Libreta de Ahorros</span> es una aplicación web bancaria que permite a los usuarios:</p>
+    <ul>
+      <li>✓ Crear cuentas de ahorro</li>
+      <li>✓ Realizar depósitos</li>
+      <li>✓ Hacer retiros</li>
+      <li>✓ Ver el historial de transacciones</li>
+      <li>✓ Eliminar cuentas</li>
+    </ul>
+    <p class="subtitle">Diseño profesional con modo oscuro incluido</p>
+  </div>
+
+  <!-- Slide 3: Arquitectura de Páginas -->
+  <div class="slide">
+    <h2>Arquitectura: 7 Páginas HTML</h2>
+    <ul>
+      <li><span class="highlight">index.html</span> - Selección y listado de cuentas</li>
+      <li><span class="highlight">crear.html</span> - Formulario para abrir nueva cuenta</li>
+      <li><span class="highlight">gestion.html</span> - Vista principal de gestión (?cuenta=id)</li>
+      <li><span class="highlight">accion.html</span> - Paso 1: Ingreso de monto (?cuenta=id&tipo=)</li>
+      <li><span class="highlight">confirmar.html</span> - Paso 2: Confirmación de operación</li>
+      <li><span class="highlight">comprobante.html</span> - Resultado con comprobante</li>
+    </ul>
+  </div>
+
+  <!-- Slide 4: Flujo de Usuario -->
+  <div class="slide">
+    <h2>Flujo de Usuario</h2>
+    <div class="code-block">
+      index.html → crear.html → gestion.html
+                              ↓
+                    accion.html (monto)
+                              ↓
+                    confirmar.html (check)
+                              ↓
+                    comprobante.html (recibo)
+                              ↓
+                    gestion.html (regresa)
+    </div>
+    <p><strong>Regla clave:</strong> El ID de cuenta vive en la URL (?cuenta=X), nunca en localStorage.</p>
+  </div>
+
+  <!-- Slide 5: Stack Tecnológico -->
+  <div class="slide">
+    <h2>Stack Tecnológico</h2>
+    <ul>
+      <li><span class="highlight">Frontend:</span> HTML5, CSS3, JavaScript Vanilla</li>
+      <li><span class="highlight">Tipografía:</span> Archivo (interfaz), IBM Plex Mono (números)</li>
+      <li><span class="highlight">Backend:</span> Node.js + Express</li>
+      <li><span class="highlight">API:</span> REST endpoints (GET, POST, DELETE)</li>
+      <li><span class="highlight">Datos:</span> En memoria (array de cuentas)</li>
+      <li><span class="highlight">Almacenamiento:</span> sessionStorage (flujo multi-paso)</li>
+    </ul>
+  </div>
+
+  <!-- Slide 6: Endpoints de API -->
+  <div class="slide">
+    <h2>Endpoints REST</h2>
+    <div class="code-block">
+      GET  /api/accounts           → Listar todas las cuentas<br>
+      POST /api/accounts           → Crear nueva cuenta<br>
+      GET  /api/accounts/:id       → Obtener detalles de 1 cuenta<br>
+      POST /api/accounts/:id/deposit  → Depositar dinero<br>
+      POST /api/accounts/:id/withdraw → Retirar dinero<br>
+      DELETE /api/accounts/:id     → Eliminar cuenta
+    </div>
+  </div>
+
+  <!-- Slide 7: Arquitectura CSS -->
+  <div class="slide">
+    <h2>Sistema de Diseño</h2>
+    <ul>
+      <li><span class="highlight">Colores:</span> Navy (#332F4A), Verde (#146D34), Rojo (#9A322A)</li>
+      <li><span class="highlight">Botones:</span> Outline style (borde sin relleno)</li>
+      <li><span class="highlight">Espaciado:</span> Grid system 32px, cards con 30px padding</li>
+      <li><span class="highlight">Dark mode:</span> CSS variables con data-theme attribute</li>
+      <li><span class="highlight">Responsive:</span> Mobile-first, breakpoint en 768px</li>
+      <li><span class="highlight">Transiciones:</span> 0.2s ease en todos los cambios</li>
+    </ul>
+  </div>
+
+  <!-- Slide 8: Seguridad y UX -->
+  <div class="slide">
+    <h2>Características de Seguridad</h2>
+    <ul>
+      <li>✓ Botón "Confirmar" se deshabilita al hacer clic (evita doble-envío)</li>
+      <li>✓ Validación de montos en cliente y servidor</li>
+      <li>✓ Estado vacío cuando no hay cuentas</li>
+      <li>✓ Manejo de errores de API con mensajes claros</li>
+      <li>✓ Búsqueda de cuentas en cliente (sin servidor)</li>
+      <li>✓ Preview en vivo de saldos finales</li>
+    </ul>
+  </div>
+
+  <!-- Slide 9: Funciones Clave (Frontend) -->
+  <div class="slide">
+    <h2>Funciones Principales</h2>
+    <div class="code-block">
+      <strong>api.js:</strong><br>
+      • formatCOP(n) - Formatea números como pesos<br>
+      • parseAmount(str) - Parse montos con separadores<br>
+      • getAccounts() - Fetch lista de cuentas<br>
+      • deposit/withdraw/deleteAccount() - Operaciones
+    </div>
+    <div class="code-block" style="margin-top: 20px;">
+      <strong>En cada página:</strong><br>
+      • init() - Carga inicial y health check<br>
+      • toggleTheme() - Cambio de modo oscuro<br>
+      • updatePreview() - Preview en vivo de operaciones
+    </div>
+  </div>
+
+  <!-- Slide 10: Flujo de Depósito (paso a paso) -->
+  <div class="slide">
+    <h2>Flujo Detallado: Depositar $150.000</h2>
+    <div style="font-size: 1.1rem; line-height: 2.2;">
+      <p><strong>1. gestion.html:</strong> Usuario hace clic en "Depositar"</p>
+      <p><strong>2. accion.html:</strong> Ingresa monto (150000), ve preview en vivo</p>
+      <p><strong>3. sessionStorage:</strong> Guarda { accountId, tipo, amount }</p>
+      <p><strong>4. confirmar.html:</strong> Muestra resumen antes/después</p>
+      <p><strong>5. API POST:</strong> /api/accounts/1/deposit { amount: 150000 }</p>
+      <p><strong>6. comprobante.html:</strong> Recibo con número y timestamp</p>
+      <p><strong>7. Regresa:</strong> gestion.html con saldo actualizado</p>
+    </div>
+  </div>
+
+  <!-- Slide 11: Variables CSS -->
+  <div class="slide">
+    <h2>Sistema de Variables CSS</h2>
+    <div class="code-block">
+      Light mode (default):<br>
+      --navy: #332F4A<br>
+      --ink: #2A2A38<br>
+      --paper: #F4F5F8<br>
+      --white: #FFFFFF
+    </div>
+    <div class="code-block" style="margin-top: 20px;">
+      Dark mode ([data-theme="dark"]):<br>
+      --navy: #1C1B2E<br>
+      --ink: #E8E9EE<br>
+      --paper: #14141F<br>
+      --white: #FFFFFF (siempre blanco para texto)
+    </div>
+  </div>
+
+  <!-- Slide 12: Validación de Montos -->
+  <div class="slide">
+    <h2>Parsing de Montos Inteligente</h2>
+    <div class="code-block">
+      function parseAmount(str) {<br>
+      &nbsp;&nbsp;// Remueve separadores de miles<br>
+      &nbsp;&nbsp;const cleaned = str.replace(/\./g, '')<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.replace(/,/g, '.');<br>
+      &nbsp;&nbsp;return parseFloat(cleaned) || 0;<br>
+      }
+    </div>
+    <p style="margin-top: 20px;">Permite: <span class="highlight">100.000</span>, <span class="highlight">100,000</span>, <span class="highlight">100000</span></p>
+  </div>
+
+  <!-- Slide 13: Conclusión -->
+  <div class="slide">
+    <h2>Resumen</h2>
+    <ul>
+      <li>✓ <strong>7 páginas HTML</strong> con flujo multi-paso</li>
+      <li>✓ <strong>API REST</strong> completa en Node.js</li>
+      <li>✓ <strong>Diseño profesional</strong> con dark mode</li>
+      <li>✓ <strong>Validación robusta</strong> en cliente y servidor</li>
+      <li>✓ <strong>UX fluida</strong> con previews y comprobantes</li>
+      <li>✓ <strong>Seguridad</strong> contra doble-envío</li>
+    </ul>
+    <p class="subtitle" style="margin-top: 50px;">Código limpio, mantenible y escalable</p>
+  </div>
+
+</div>
+
+<div class="slide-counter">
+  <span id="current">1</span> / <span id="total">13</span>
+</div>
+
+<div class="controls">
+  <button onclick="prevSlide()">← Anterior</button>
+  <button onclick="nextSlide()">Siguiente →</button>
+</div>
+
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+
+document.getElementById('total').textContent = totalSlides;
+
+function showSlide(n) {
+  slides[currentSlide].classList.remove('active');
+  currentSlide = (n + totalSlides) % totalSlides;
+  slides[currentSlide].classList.add('active');
+  document.getElementById('current').textContent = currentSlide + 1;
+}
+
+function nextSlide() {
+  showSlide(currentSlide + 1);
+}
+
+function prevSlide() {
+  showSlide(currentSlide - 1);
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') nextSlide();
+  if (e.key === 'ArrowLeft') prevSlide();
+});
+</script>
+
+</body>
+</html>
