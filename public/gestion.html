@@ -20,7 +20,7 @@
       <div class="header-actions">
         <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
         <button class="theme-toggle" onclick="toggleTheme()">
-          <span class="icon" id="themeIcon">🌙</span>
+          <span class="icon" id="themeIcon">◐</span>
         </button>
       </div>
     </div>
@@ -52,9 +52,9 @@
     <!-- Actions -->
     <div class="card">
       <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <a href="#" id="depositBtn" class="btn-success" style="text-decoration: none;">💰 Depositar</a>
-        <a href="#" id="withdrawBtn" class="btn-danger" style="text-decoration: none;">💸 Retirar</a>
-        <button class="btn-secondary" onclick="deleteAccountConfirm()" style="margin-left: auto;">🗑️ Eliminar cuenta</button>
+        <a href="#" id="depositBtn" class="btn-success"><span class="btn-icon">↓</span> Depositar</a>
+        <a href="#" id="withdrawBtn" class="btn-danger"><span class="btn-icon">↑</span> Retirar</a>
+        <button class="btn-secondary" onclick="deleteAccountConfirm()" style="margin-left: auto;"><span class="btn-icon">×</span> Eliminar cuenta</button>
       </div>
       <div id="deleteNotice" class="notice"></div>
     </div>
@@ -157,10 +157,10 @@
       const isDark = root.getAttribute('data-theme') === 'dark';
       if (isDark) {
         root.removeAttribute('data-theme');
-        document.getElementById('themeIcon').textContent = '🌙';
+        document.getElementById('themeIcon').textContent = '◐';
       } else {
         root.setAttribute('data-theme', 'dark');
-        document.getElementById('themeIcon').textContent = '☀️';
+        document.getElementById('themeIcon').textContent = '◑';
       }
     }
 

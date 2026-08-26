@@ -20,7 +20,7 @@
       <div class="header-actions">
         <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
         <button class="theme-toggle" onclick="toggleTheme()">
-          <span class="icon" id="themeIcon">🌙</span>
+          <span class="icon" id="themeIcon">◐</span>
         </button>
       </div>
     </div>
@@ -164,10 +164,10 @@
       const isDark = root.getAttribute('data-theme') === 'dark';
       if (isDark) {
         root.removeAttribute('data-theme');
-        document.getElementById('themeIcon').textContent = '🌙';
+        document.getElementById('themeIcon').textContent = '◐';
       } else {
         root.setAttribute('data-theme', 'dark');
-        document.getElementById('themeIcon').textContent = '☀️';
+        document.getElementById('themeIcon').textContent = '◑';
       }
     }
 
