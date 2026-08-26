@@ -2,7 +2,7 @@ const API_BASE = window.location.origin + '/api/accounts';
 
 // Format number as COP currency
 function formatCOP(n) {
-  return Number(n).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return Number(n).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
 // Get current time as string
