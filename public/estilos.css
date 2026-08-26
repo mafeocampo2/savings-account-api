@@ -6,6 +6,7 @@
   --line: #E6E8EE;
   --paper: #F4F5F8;
   --white: #FFFFFF;
+  --white-bg: #FFFFFF;
   --yellow: #A9BFD8;
   --green: #146D34;
   --red: #9A322A;
@@ -18,7 +19,8 @@
   --ink-soft: #9AA3B2;
   --line: #33344A;
   --paper: #14141F;
-  --white: #1D1E2C;
+  --white: #FFFFFF;
+  --white-bg: #1D1E2C;
   --yellow: #A9BFD8;
   --green: #6FCBAE;
   --red: #E1958F;
@@ -153,7 +155,7 @@ body {
 
 /* Secondary nav bar */
 .secondary-nav {
-  background: var(--white);
+  background: var(--white-bg);
   border-bottom: 1px solid var(--line);
   height: 64px;
   display: flex;
@@ -224,7 +226,7 @@ body {
 }
 
 .card {
-  background: var(--white);
+  background: var(--white-bg);
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 30px 32px;
@@ -711,7 +713,8 @@ tbody tr:last-child td {
 .search-box input {
   flex: 1;
   border: 1px solid var(--line);
-  background: var(--white);
+  background: var(--white-bg);
+  color: var(--ink);
   padding: 10px 14px;
   border-radius: 6px;
   font-size: 14px;
