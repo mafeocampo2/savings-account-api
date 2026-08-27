@@ -1,152 +1,84 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Ahorros — Seleccionar cuenta</title>
-  <link rel="stylesheet" href="estilos.css">
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Sistema de Ahorros</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="header">
-    <div class="header-inner">
-      <div class="brand">
-        <div class="brand-mark">$</div>
-        <div class="brand-text">
-          <div class="eyebrow">TechSoft S.A. · Prototipo</div>
-          <h1>Sistema de Ahorros</h1>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">$</div>
+      <div class="brand-text">
+        <h1>Sistema de Ahorros</h1>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <span id="themeLabel">Modo oscuro</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§1</span>
+      <span class="section-title">Mis cuentas</span>
+    </div>
+
+    <div id="accountsList">
+      <p style="color:var(--ink-soft);">Cargando cuentas...</p>
+    </div>
+
+    <div style="margin-top:24px;">
+      <a href="crear.html" class="btn-primary">+ Crear nueva cuenta</a>
+    </div>
+  </div>
+
+  <div class="footer-note">fin del registro<span class="dash">—</span>los datos viven en el servidor mientras esté corriendo</div>
+
+</div>
+
+<script src="app.js"></script>
+<script>
+async function loadAccounts() {
+  try {
+    const res = await fetch(API_BASE);
+    const json = await res.json();
+    const accounts = json.data || [];
+
+    const list = document.getElementById('accountsList');
+    if (accounts.length === 0) {
+      list.innerHTML = '<p style="color:var(--ink-soft); font-style:italic;">Aún no hay cuentas creadas.</p>';
+      return;
+    }
+
+    list.innerHTML = accounts.map(acc => `
+      <div class="card">
+        <div>
+          <strong class="card-owner">#${acc.id} — ${acc.ownerName}</strong>
+          <div class="card-amount">${money(acc.balance)}</div>
+        </div>
+        <div class="card-side">
+          <span class="card-date">${new Date(acc.createdAt).toLocaleDateString('es-CO')}</span>
+          <a href="gestion.html?id=${acc.id}" class="btn-primary">Gestionar</a>
         </div>
       </div>
-      <div class="header-actions">
-        <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
-        <button class="theme-toggle" onclick="toggleTheme()">
-          <span class="icon" id="themeIcon">◐</span>
-        </button>
-      </div>
-    </div>
-  </div>
+    `).join('');
+  } catch (e) {
+    document.getElementById('accountsList').innerHTML = '<p style="color:var(--red);">Error cargando cuentas.</p>';
+  }
+}
 
-  <div class="secondary-nav">
-    <div class="secondary-nav-inner">
-      <div class="nav-title">Seleccionar cuenta</div>
-    </div>
-  </div>
-
-  <div class="container">
-    <!-- Search and actions -->
-    <div style="margin-bottom: 32px;">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Buscar por titular…" onkeyup="filterAccounts()">
-        <button class="btn-secondary" onclick="refreshAccounts()" title="Actualizar lista">Actualizar</button>
-        <a href="crear.html" class="btn-primary">Abrir cuenta</a>
-      </div>
-    </div>
-
-    <!-- Accounts list -->
-    <div class="card">
-      <div id="accountsList" style="min-height: 300px;">
-        <div class="empty-state">
-          <div class="empty-state-icon">↻</div>
-          <div class="empty-state-title">Cargando…</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Offline notice -->
-    <div id="offlineNotice" class="notice err" style="display: none;">
-      <strong>Sin conexión con el servidor.</strong> Verifica tu conexión e intenta de nuevo.
-      <button class="btn-secondary" onclick="refreshAccounts()" style="margin-top: 12px;">Reintentar</button>
-    </div>
-  </div>
-
-  <script src="api.js"></script>
-  <script>
-    let allAccounts = [];
-    let connectionLost = false;
-
-    // Initialize
-    async function init() {
-      checkHealth();
-      await refreshAccounts();
-      setInterval(checkHealth, 30000);
-    }
-
-    // Refresh accounts list
-    async function refreshAccounts() {
-      const list = document.getElementById('accountsList');
-      const notice = document.getElementById('offlineNotice');
-
-      list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">↻</div><div class="empty-state-title">Cargando…</div></div>';
-
-      const accounts = await getAccounts();
-      allAccounts = accounts;
-
-      if (accounts.length === 0) {
-        list.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">⊕</div>
-            <div class="empty-state-title">Todavía no hay cuentas</div>
-            <div class="empty-state-text">Abre tu primera cuenta para empezar a ahorrar.</div>
-            <a href="crear.html" class="btn-primary">Crear primera cuenta</a>
-          </div>
-        `;
-        notice.style.display = 'none';
-        connectionLost = false;
-      } else {
-        renderAccounts(accounts);
-        notice.style.display = 'none';
-        connectionLost = false;
-      }
-    }
-
-    // Render accounts
-    function renderAccounts(accounts) {
-      const list = document.getElementById('accountsList');
-      if (accounts.length === 0) {
-        list.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">⊕</div>
-            <div class="empty-state-title">Todavía no hay cuentas</div>
-            <div class="empty-state-text">Abre tu primera cuenta para empezar a ahorrar.</div>
-            <a href="crear.html" class="btn-primary">Crear primera cuenta</a>
-          </div>
-        `;
-        return;
-      }
-
-      list.innerHTML = accounts.map(acc => `
-        <a href="gestion.html?cuenta=${acc.id}" class="account-row">
-          <div class="account-info">
-            <div class="account-name">${acc.owner}</div>
-            <div class="account-id">#${String(acc.id).padStart(3, '0')}</div>
-          </div>
-          <div class="account-balance">$ ${formatCOP(acc.balance)}</div>
-        </a>
-      `).join('');
-    }
-
-    // Filter accounts by search
-    function filterAccounts() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const filtered = allAccounts.filter(acc =>
-        acc.owner.toLowerCase().includes(query) ||
-        String(acc.id).includes(query)
-      );
-      renderAccounts(filtered);
-    }
-
-    // Toggle theme
-    function toggleTheme() {
-      const root = document.documentElement;
-      const isDark = root.getAttribute('data-theme') === 'dark';
-      if (isDark) {
-        root.removeAttribute('data-theme');
-        document.getElementById('themeIcon').textContent = '◐';
-      } else {
-        root.setAttribute('data-theme', 'dark');
-        document.getElementById('themeIcon').textContent = '◑';
-      }
-    }
+loadAccounts();
+</script>
 
     init();
   </script>

@@ -1,176 +1,191 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Ahorros — Gestión de cuenta</title>
-  <link rel="stylesheet" href="estilos.css">
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Gestionar cuenta — Sistema de Ahorros</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="header">
-    <div class="header-inner">
-      <div class="brand">
-        <div class="brand-mark">$</div>
-        <div class="brand-text">
-          <div class="eyebrow">TechSoft S.A. · Prototipo</div>
-          <h1>Sistema de Ahorros</h1>
-        </div>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">$</div>
+      <div class="brand-text">
+        <h1>Sistema de Ahorros</h1>
       </div>
-      <div class="header-actions">
-        <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
-        <button class="theme-toggle" onclick="toggleTheme()">
-          <span class="icon" id="themeIcon">◐</span>
-        </button>
+    </div>
+    <div class="topbar-actions">
+      <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <span id="themeLabel">Modo oscuro</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§1</span>
+      <span class="section-title">Información de la cuenta</span>
+    </div>
+
+    <div id="accountInfo">
+      <p style="color:var(--ink-soft);">Cargando...</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§2</span>
+      <span class="section-title">Saldo actual</span>
+    </div>
+
+    <div class="balance-row">
+      <div>
+        <div class="balance-label">Disponible</div>
+        <div class="balance-value" id="balanceValue"></div>
       </div>
     </div>
   </div>
 
-  <div class="secondary-nav">
-    <div class="secondary-nav-inner">
-      <a href="index.html" class="nav-back">‹ Volver</a>
-      <span class="nav-separator">—</span>
-      <div class="nav-title" id="navTitle">Gestión de cuenta</div>
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§3</span>
+      <span class="section-title">Operaciones</span>
     </div>
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <a href="#" id="depositLink" class="btn-primary">Depositar</a>
+      <a href="#" id="withdrawLink" class="btn-primary">Retirar</a>
+      <button class="btn-danger" onclick="deleteAccount()">Eliminar cuenta</button>
+      <a href="index.html" class="btn-ghost">Volver</a>
+    </div>
+    <div id="deleteNotice" class="notice"></div>
   </div>
 
-  <div class="container">
-    <!-- Balance -->
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px;">
-        <div>
-          <div class="balance-label">Saldo disponible</div>
-          <div class="balance-value"><span>$</span> <span id="balanceValue">0,00</span></div>
-        </div>
-        <div style="text-align: right;">
-          <div class="account-name" id="ownerName">—</div>
-          <div class="account-id" id="accountId">—</div>
-        </div>
-      </div>
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§4</span>
+      <span class="section-title">Historial</span>
     </div>
-
-    <!-- Actions -->
-    <div class="card">
-      <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-        <button id="depositBtn" class="btn-success" onclick="goDeposit()">Depositar</button>
-        <button id="withdrawBtn" class="btn-danger" onclick="goWithdraw()">Retirar</button>
-        <button class="btn-secondary" onclick="deleteAccountConfirm()" style="margin-left: auto;">Eliminar cuenta</button>
-      </div>
-      <div id="deleteNotice" class="notice"></div>
-    </div>
-
-    <!-- Movements -->
-    <div class="card">
-      <div style="margin-bottom: 20px;">
-        <h3 style="margin: 0; font-size: 14px; text-transform: uppercase; font-weight: 700; color: var(--ink); letter-spacing: 0.06em;">Movimientos</h3>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Hora</th>
-            <th>Movimiento</th>
-            <th style="text-align: right;">Monto</th>
-          </tr>
-        </thead>
-        <tbody id="ledgerBody">
-          <tr class="empty-row">
-            <td colspan="3">Cargando movimientos…</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div style="text-align: center; font-size: 12px; color: var(--ink-soft); margin-top: 32px;">
-      Los datos viven en el servidor mientras esté corriendo
-    </div>
+    <table>
+      <thead>
+        <tr><th>Fecha</th><th>Hora</th><th>Movimiento</th><th style="text-align:right;">Monto</th></tr>
+      </thead>
+      <tbody id="ledgerBody">
+        <tr class="empty-row"><td colspan="4">Cargando historial...</td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <script src="api.js"></script>
-  <script>
-    const accountId = getParam('cuenta');
-    let currentAccount = null;
+  <div class="footer-note">fin del registro<span class="dash">—</span>los datos viven en el servidor mientras esté corriendo</div>
 
-    async function init() {
-      if (!accountId) {
-        window.location.href = 'index.html';
-        return;
-      }
+</div>
 
-      checkHealth();
-      await loadAccount();
-      setInterval(checkHealth, 30000);
-      setInterval(loadAccount, 10000);
+<script src="app.js"></script>
+<script>
+const accountId = getQueryParam('id');
+
+async function loadAccount() {
+  if (!accountId) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/${accountId}`);
+    const json = await res.json();
+
+    if (!res.ok || !json.data) {
+      document.getElementById('accountInfo').innerHTML = '<p style="color:var(--red);">Cuenta no encontrada.</p>';
+      return;
     }
 
-    async function loadAccount() {
-      const account = await getAccount(accountId);
-      if (!account) {
-        document.querySelector('.container').innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">❌</div>
-            <div class="empty-state-title">Cuenta no encontrada</div>
-            <div class="empty-state-text">La cuenta que buscas no existe o fue eliminada.</div>
-            <a href="index.html" class="btn-primary" style="text-decoration: none; display: inline-block;">← Volver al inicio</a>
-          </div>
-        `;
-        return;
-      }
+    const acc = json.data;
+    document.getElementById('accountInfo').innerHTML = `
+      <div style="display:grid; grid-template-columns:auto auto; gap:24px; align-items:baseline;">
+        <div><span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Número de cuenta</span><div style="font-size:20px; font-weight:700;">#${acc.id}</div></div>
+        <div><span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Titular</span><div style="font-size:20px; font-weight:700;">${acc.ownerName}</div></div>
+        <div><span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Fecha de apertura</span><div style="font-size:14px;">${new Date(acc.createdAt).toLocaleDateString('es-CO')}</div></div>
+      </div>
+    `;
 
-      currentAccount = account;
-      document.getElementById('balanceValue').textContent = formatCOP(account.balance);
-      document.getElementById('ownerName').textContent = account.owner;
-      document.getElementById('accountId').textContent = '#' + String(account.id).padStart(3, '0');
+    document.getElementById('balanceValue').innerHTML = money(acc.balance);
+
+    document.getElementById('depositLink').href = `accion.html?id=${accountId}&tipo=deposit`;
+    document.getElementById('withdrawLink').href = `accion.html?id=${accountId}&tipo=withdraw`;
+
+    loadHistory();
+  } catch (e) {
+    document.getElementById('accountInfo').innerHTML = '<p style="color:var(--red);">Error cargando cuenta.</p>';
+  }
+}
+
+async function loadHistory() {
+  try {
+    const res = await fetch(`${API_BASE}/${accountId}/history`);
+    const json = await res.json();
+
+    if (!res.ok || !json.data) {
+      document.getElementById('ledgerBody').innerHTML = '<tr class="empty-row"><td colspan="4">Sin historial.</td></tr>';
+      return;
     }
 
-    function goDeposit() {
-      window.location.href = `accion.html?cuenta=${accountId}&tipo=deposito`;
+    const transactions = json.data.transactions || [];
+    if (transactions.length === 0) {
+      document.getElementById('ledgerBody').innerHTML = '<tr class="empty-row"><td colspan="4">Sin historial.</td></tr>';
+      return;
     }
 
-    function goWithdraw() {
-      window.location.href = `accion.html?cuenta=${accountId}&tipo=retiro`;
+    const body = document.getElementById('ledgerBody');
+    body.innerHTML = transactions.reverse().map(tx => {
+      const date = new Date(tx.timestamp);
+      const dateStr = date.toLocaleDateString('es-CO');
+      const timeStr = fmtTime(date);
+      let sign = '';
+      let className = 'neu';
+      if (tx.type === 'deposit') { sign = '+ '; className = 'pos'; }
+      else if (tx.type === 'withdraw') { sign = '− '; className = 'neg'; }
+
+      return `<tr>
+        <td>${dateStr}</td>
+        <td>${timeStr}</td>
+        <td>${tx.description}</td>
+        <td class="t-amt ${className}">${sign}${money(Math.abs(tx.amount))}</td>
+      </tr>`;
+    }).join('');
+  } catch (e) {
+    document.getElementById('ledgerBody').innerHTML = '<tr class="empty-row"><td colspan="4">Error cargando historial.</td></tr>';
+  }
+}
+
+async function deleteAccount() {
+  if (!confirm('¿Estás seguro de que deseas eliminar esta cuenta?')) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/${accountId}`, { method: 'DELETE' });
+    const json = await res.json();
+
+    if (!res.ok || !json.success) {
+      showNotice('deleteNotice', json.message || 'Error eliminando cuenta.', false);
+      return;
     }
 
-    function deleteAccountConfirm() {
-      if (!currentAccount) return;
-      const confirmed = confirm(`¿Estás seguro de que deseas eliminar la cuenta #${String(currentAccount.id).padStart(3, '0')} de ${currentAccount.owner}? Esta acción no se puede deshacer.`);
-      if (!confirmed) return;
+    showNotice('deleteNotice', 'Cuenta eliminada.', true);
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 1500);
+  } catch (e) {
+    showNotice('deleteNotice', 'Error conectando con el servidor.', false);
+  }
+}
 
-      deleteAccountAction();
-    }
+loadAccount();
+</script>
 
-    async function deleteAccountAction() {
-      const btn = event.target;
-      btn.disabled = true;
-
-      const result = await deleteAccount(accountId);
-      const notice = document.getElementById('deleteNotice');
-
-      if (result.success) {
-        notice.textContent = 'Cuenta eliminada. Redirigiendo…';
-        notice.className = 'notice show ok';
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 1500);
-      } else {
-        notice.textContent = result.message;
-        notice.className = 'notice show err';
-        btn.disabled = false;
-      }
-    }
-
-    function toggleTheme() {
-      const root = document.documentElement;
-      const isDark = root.getAttribute('data-theme') === 'dark';
-      if (isDark) {
-        root.removeAttribute('data-theme');
-        document.getElementById('themeIcon').textContent = '◐';
-      } else {
-        root.setAttribute('data-theme', 'dark');
-        document.getElementById('themeIcon').textContent = '◑';
-      }
-    }
-
-    init();
-  </script>
 </body>
 </html>

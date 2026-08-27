@@ -1,142 +1,106 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Ahorros — Comprobante</title>
-  <link rel="stylesheet" href="estilos.css">
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Comprobante — Sistema de Ahorros</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="header">
-    <div class="header-inner">
-      <div class="brand">
-        <div class="brand-mark">$</div>
-        <div class="brand-text">
-          <div class="eyebrow">TechSoft S.A. · Prototipo</div>
-          <h1>Sistema de Ahorros</h1>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">$</div>
+      <div class="brand-text">
+        <h1>Sistema de Ahorros</h1>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <span id="themeLabel">Modo oscuro</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="section" style="background:var(--green-bg); border:2px solid var(--green);">
+    <div style="text-align:center; padding:24px 0;">
+      <div style="font-size:24px; font-weight:700; color:var(--green); margin-bottom:8px;">Operación aprobada</div>
+      <div style="font-size:14px; color:var(--ink-soft);" id="opTypeText"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§3</span>
+      <span class="section-title">Comprobante de operación</span>
+    </div>
+
+    <div style="background:var(--paper); padding:24px; border-radius:8px; border:2px dashed var(--line); margin-bottom:24px;">
+      <div style="display:grid; gap:16px; text-align:center;">
+        <div>
+          <span style="color:var(--ink-soft); font-size:11px; text-transform:uppercase;">Fecha y hora</span>
+          <div style="font-size:14px; font-weight:600;" id="dateTime"></div>
         </div>
-      </div>
-      <div class="header-actions">
-        <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
-        <button class="theme-toggle" onclick="toggleTheme()">
-          <span class="icon" id="themeIcon">◐</span>
-        </button>
-      </div>
-    </div>
-  </div>
 
-  <div class="secondary-nav">
-    <div class="secondary-nav-inner">
-      <div class="nav-title">Comprobante</div>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="card">
-      <div class="receipt">
-        <div class="receipt-icon">✓</div>
-        <div class="receipt-title" id="actionTitle">Depósito completado</div>
-        <div class="receipt-amount" id="amount">$ 0,00</div>
-
-        <div class="receipt-details">
-          <div class="receipt-detail">
-            <span class="receipt-detail-label">Cuenta</span>
-            <span class="receipt-detail-value" id="detailAccount">—</span>
-          </div>
-          <div class="receipt-detail">
-            <span class="receipt-detail-label">Saldo anterior</span>
-            <span class="receipt-detail-value" id="detailBefore">$ 0,00</span>
-          </div>
-          <div class="receipt-detail">
-            <span class="receipt-detail-label">Saldo actual</span>
-            <span class="receipt-detail-value" id="detailAfter">$ 0,00</span>
-          </div>
-          <div class="receipt-detail">
-            <span class="receipt-detail-label">Número de comprobante</span>
-            <span class="receipt-detail-value" id="detailReceipt">—</span>
-          </div>
-          <div class="receipt-detail">
-            <span class="receipt-detail-label">Fecha y hora</span>
-            <span class="receipt-detail-value" id="detailTime">—</span>
+        <div style="border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:16px 0;">
+          <div>
+            <span style="color:var(--ink-soft); font-size:11px; text-transform:uppercase;">Monto movido</span>
+            <div style="font-size:32px; font-weight:800; color:var(--amount);" id="amount"></div>
           </div>
         </div>
 
-        <a href="#" id="returnBtn" class="btn-primary" style="text-decoration: none; display: inline-block; margin-top: 32px;">← Volver a gestión de cuenta</a>
+        <div>
+          <span style="color:var(--ink-soft); font-size:11px; text-transform:uppercase;">Nuevo saldo</span>
+          <div style="font-size:20px; font-weight:700; color:var(--green);" id="newBalance"></div>
+        </div>
+
+        <div style="border-top:1px solid var(--line); padding-top:16px;">
+          <span style="color:var(--ink-soft); font-size:11px; text-transform:uppercase;">Número de referencia</span>
+          <div style="font-size:12px; font-family:monospace; font-weight:600;" id="refNumber"></div>
+        </div>
       </div>
+    </div>
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <a href="#" id="gestionLink" class="btn-primary">Volver a gestión</a>
+      <a href="index.html" class="btn-ghost">Inicio</a>
     </div>
   </div>
 
-  <script src="api.js"></script>
-  <script>
-    let receipt = null;
+  <div class="footer-note">fin del registro<span class="dash">—</span>los datos viven en el servidor mientras esté corriendo</div>
 
-    async function init() {
-      const stored = sessionStorage.getItem('receipt');
-      if (!stored) {
-        window.location.href = 'index.html';
-        return;
-      }
+</div>
 
-      receipt = JSON.parse(stored);
-      const { accountId, type, amount, newBalance, timestamp } = receipt;
+<script src="app.js"></script>
+<script>
+const accountId = getQueryParam('id');
+const result = JSON.parse(sessionStorage.getItem('operationResult') || '{}');
 
-      if (!accountId) {
-        sessionStorage.removeItem('receipt');
-        window.location.href = 'index.html';
-        return;
-      }
+if (!accountId || !result.operation) {
+  window.location.href = 'index.html';
+}
 
-      // Set up UI
-      const isDeposit = type === 'deposito';
-      document.getElementById('actionTitle').textContent = isDeposit ? 'Depósito completado' : 'Retiro completado';
-      document.getElementById('amount').textContent = (isDeposit ? '+ ' : '− ') + '$ ' + formatCOP(amount);
-      document.getElementById('returnBtn').href = `gestion.html?cuenta=${accountId}`;
+const isDeposit = result.operation === 'deposit';
+document.getElementById('opTypeText').textContent = isDeposit ? 'Depósito completado' : 'Retiro completado';
+document.getElementById('amount').innerHTML = money(result.amount);
+document.getElementById('newBalance').innerHTML = money(result.newBalance);
 
-      checkHealth();
-      await loadAccount();
-      setInterval(checkHealth, 30000);
-    }
+const now = new Date();
+document.getElementById('dateTime').textContent = fmtDateTime(now);
 
-    async function loadAccount() {
-      const { accountId, amount, newBalance, timestamp } = receipt;
-      const account = await getAccount(accountId);
+const refNum = `REF-${accountId}-${Date.now()}`;
+document.getElementById('refNumber').textContent = refNum;
 
-      if (!account) {
-        sessionStorage.removeItem('receipt');
-        window.location.href = 'index.html';
-        return;
-      }
+document.getElementById('gestionLink').href = `gestion.html?id=${accountId}`;
 
-      const before = newBalance - amount * (receipt.type === 'deposito' ? 1 : -1);
+sessionStorage.removeItem('operationAmount');
+sessionStorage.removeItem('operationResult');
+</script>
 
-      document.getElementById('detailAccount').textContent = `#${String(account.id).padStart(3, '0')} · ${account.owner}`;
-      document.getElementById('detailBefore').textContent = '$ ' + formatCOP(before);
-      document.getElementById('detailAfter').textContent = '$ ' + formatCOP(newBalance);
-      document.getElementById('detailReceipt').textContent = generateReceiptNumber();
-      document.getElementById('detailTime').textContent = timestamp;
-    }
-
-    function generateReceiptNumber() {
-      // Generate a consistent receipt number based on timestamp and random
-      const base = Math.floor(Date.now() / 1000).toString(36).toUpperCase();
-      const rand = Math.floor(Math.random() * 10000).toString(36).toUpperCase().padStart(4, '0');
-      return base + rand;
-    }
-
-    function toggleTheme() {
-      const root = document.documentElement;
-      const isDark = root.getAttribute('data-theme') === 'dark';
-      if (isDark) {
-        root.removeAttribute('data-theme');
-        document.getElementById('themeIcon').textContent = '◐';
-      } else {
-        root.setAttribute('data-theme', 'dark');
-        document.getElementById('themeIcon').textContent = '◑';
-      }
-    }
-
-    init();
-  </script>
 </body>
 </html>

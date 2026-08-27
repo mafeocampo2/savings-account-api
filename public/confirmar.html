@@ -1,186 +1,137 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Ahorros — Confirmar</title>
-  <link rel="stylesheet" href="estilos.css">
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Confirmar operación — Sistema de Ahorros</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="header">
-    <div class="header-inner">
-      <div class="brand">
-        <div class="brand-mark">$</div>
-        <div class="brand-text">
-          <div class="eyebrow">TechSoft S.A. · Prototipo</div>
-          <h1>Sistema de Ahorros</h1>
-        </div>
-      </div>
-      <div class="header-actions">
-        <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
-        <button class="theme-toggle" onclick="toggleTheme()">
-          <span class="icon" id="themeIcon">◐</span>
-        </button>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">$</div>
+      <div class="brand-text">
+        <h1>Sistema de Ahorros</h1>
       </div>
     </div>
-  </div>
-
-  <div class="secondary-nav">
-    <div class="secondary-nav-inner">
-      <a href="#" id="backBtn" class="nav-back">‹ Volver</a>
-      <span class="nav-separator">—</span>
-      <div class="nav-title">Confirmar</div>
-      <div class="nav-chip">PASO 2 DE 2</div>
+    <div class="topbar-actions">
+      <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <span id="themeLabel">Modo oscuro</span>
+      </button>
     </div>
   </div>
+</div>
 
-  <div class="container">
-    <div class="card">
-      <!-- Main amount -->
-      <div style="text-align: center; margin-bottom: 40px;">
-        <div style="font-size: 14px; color: var(--ink-soft); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700;" id="actionLabel">Depósito</div>
-        <div style="font-size: 56px; font-weight: 800; color: var(--navy); font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums;" id="mainAmount">$ 0,00</div>
-      </div>
+<div class="page">
 
-      <!-- Summary -->
-      <div class="summary" style="margin-bottom: 40px;">
-        <div class="summary-row">
-          <span class="summary-label">Cuenta</span>
-          <span class="summary-value" id="summaryAccount">—</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Saldo actual</span>
-          <span class="summary-value">$ <span id="summaryBefore">0,00</span></span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label" id="summaryLabel">Depósito</span>
-          <span class="summary-value" id="summaryAmount">$ 0,00</span>
-        </div>
-        <div class="summary-row">
-          <span>Saldo final</span>
-          <span class="summary-value">$ <span id="summaryAfter">0,00</span></span>
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <div style="display: flex; gap: 12px;">
-        <button id="confirmBtn" class="btn-confirm" onclick="performAction()">Confirmar</button>
-        <a id="cancelBtn" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Cancelar</a>
-      </div>
-
-      <div id="notice" class="notice"></div>
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§2</span>
+      <span class="section-title">Confirmar operación</span>
     </div>
+
+    <div style="background:var(--paper); padding:24px; border-radius:8px; margin-bottom:24px;">
+      <div style="display:grid; gap:18px;">
+        <div>
+          <span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Tipo de operación</span>
+          <div id="opType" style="font-size:18px; font-weight:700;"></div>
+        </div>
+        <div>
+          <span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Monto</span>
+          <div style="font-size:32px; font-weight:800; color:var(--amount);" id="opAmount"></div>
+        </div>
+        <div>
+          <span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Saldo actual</span>
+          <div style="font-size:18px; font-weight:700;" id="currentBalance"></div>
+        </div>
+        <div>
+          <span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Saldo después de la operación</span>
+          <div style="font-size:18px; font-weight:700; color:var(--green);" id="newBalance"></div>
+        </div>
+        <div>
+          <span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Fecha y hora</span>
+          <div style="font-size:14px;" id="dateTime"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px;">
+      <button class="btn-primary" onclick="performOperation()">Confirmar</button>
+      <a id="backLink" href="#" class="btn-ghost">Cancelar</a>
+    </div>
+
+    <div id="notice" class="notice"></div>
   </div>
 
-  <script src="api.js"></script>
-  <script>
-    let pendingAction = null;
-    let currentAccount = null;
+</div>
 
-    async function init() {
-      const stored = sessionStorage.getItem('pendingAction');
-      if (!stored) {
-        window.location.href = 'index.html';
-        return;
-      }
+<script src="app.js"></script>
+<script>
+const accountId = getQueryParam('id');
+const tipo = getQueryParam('tipo');
+const amount = sessionStorage.getItem('operationAmount');
 
-      pendingAction = JSON.parse(stored);
-      const { accountId, type, amount } = pendingAction;
+async function loadData() {
+  if (!accountId || !tipo || !amount) {
+    window.location.href = `accion.html?id=${accountId}&tipo=${tipo}`;
+    return;
+  }
 
-      if (!accountId || !['deposito', 'retiro'].includes(type) || amount <= 0) {
-        sessionStorage.removeItem('pendingAction');
-        window.location.href = 'index.html';
-        return;
-      }
+  try {
+    const res = await fetch(`${API_BASE}/${accountId}`);
+    const json = await res.json();
 
-      // Set up UI based on action type
-      const isDeposit = type === 'deposito';
-      document.getElementById('actionLabel').textContent = isDeposit ? 'Depósito' : 'Retiro';
-      document.getElementById('mainAmount').textContent = (isDeposit ? '+ ' : '− ') + '$ ' + formatCOP(amount);
-      document.getElementById('summaryLabel').textContent = isDeposit ? 'Depósito' : 'Retiro';
-      document.getElementById('summaryAmount').textContent = (isDeposit ? '+ ' : '− ') + '$ ' + formatCOP(amount);
-
-      const backHref = `accion.html?cuenta=${accountId}&tipo=${type}`;
-      document.getElementById('backBtn').href = backHref;
-      document.getElementById('cancelBtn').href = backHref;
-
-      checkHealth();
-      await loadAccount();
-      setInterval(checkHealth, 30000);
+    if (!res.ok || !json.data) {
+      window.location.href = 'index.html';
+      return;
     }
 
-    async function loadAccount() {
-      const { accountId } = pendingAction;
-      const account = await getAccount(accountId);
+    const acc = json.data;
+    const isDeposit = tipo === 'deposit';
+    const amountNum = Number(amount);
+    const newBal = isDeposit ? acc.balance + amountNum : acc.balance - amountNum;
 
-      if (!account) {
-        sessionStorage.removeItem('pendingAction');
-        window.location.href = 'index.html';
-        return;
-      }
+    document.getElementById('opType').textContent = isDeposit ? 'Depósito' : 'Retiro';
+    document.getElementById('opAmount').innerHTML = money(amountNum);
+    document.getElementById('currentBalance').innerHTML = money(acc.balance);
+    document.getElementById('newBalance').innerHTML = money(newBal);
 
-      currentAccount = account;
-      const isDeposit = pendingAction.type === 'deposito';
-      const final = isDeposit ? account.balance + pendingAction.amount : account.balance - pendingAction.amount;
+    const now = new Date();
+    document.getElementById('dateTime').textContent = fmtDateTime(now);
 
-      document.getElementById('summaryAccount').textContent = `#${String(account.id).padStart(3, '0')} · ${account.owner}`;
-      document.getElementById('summaryBefore').textContent = formatCOP(account.balance);
-      document.getElementById('summaryAfter').textContent = formatCOP(Math.max(0, final));
+    document.getElementById('backLink').href = `accion.html?id=${accountId}&tipo=${tipo}`;
+  } catch (e) {
+    showNotice('notice', 'Error cargando datos.', false);
+  }
+}
+
+async function performOperation() {
+  try {
+    const url = `${API_BASE}/${accountId}/${tipo}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: Number(amount) })
+    });
+    const json = await res.json();
+
+    if (!res.ok || !json.success) {
+      showNotice('notice', json.message || 'Operación rechazada.', false);
+      return;
     }
 
-    async function performAction() {
-      const button = document.getElementById('confirmBtn');
-      const notice = document.getElementById('notice');
-      button.disabled = true;
+    sessionStorage.setItem('operationResult', JSON.stringify(json.data));
+    window.location.href = `comprobante.html?id=${accountId}`;
+  } catch (e) {
+    showNotice('notice', 'Error procesando operación.', false);
+  }
+}
 
-      const { accountId, type, amount } = pendingAction;
-      let result;
+loadData();
+</script>
 
-      if (type === 'deposito') {
-        result = await deposit(accountId, amount);
-      } else {
-        result = await withdraw(accountId, amount);
-      }
-
-      if (result.success) {
-        notice.textContent = 'Operación completada. Redirigiendo…';
-        notice.className = 'notice show ok';
-
-        // Store receipt data
-        sessionStorage.setItem('receipt', JSON.stringify({
-          accountId,
-          type,
-          amount: result.data.amount,
-          newBalance: result.data.newBalance,
-          timestamp: dateTimeStr()
-        }));
-
-        sessionStorage.removeItem('pendingAction');
-
-        setTimeout(() => {
-          window.location.href = 'comprobante.html';
-        }, 1500);
-      } else {
-        notice.textContent = result.message;
-        notice.className = 'notice show err';
-        button.disabled = false;
-      }
-    }
-
-    function toggleTheme() {
-      const root = document.documentElement;
-      const isDark = root.getAttribute('data-theme') === 'dark';
-      if (isDark) {
-        root.removeAttribute('data-theme');
-        document.getElementById('themeIcon').textContent = '◐';
-      } else {
-        root.setAttribute('data-theme', 'dark');
-        document.getElementById('themeIcon').textContent = '◑';
-      }
-    }
-
-    init();
-  </script>
 </body>
 </html>

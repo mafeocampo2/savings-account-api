@@ -1,5 +1,6 @@
 const accountRepository = require('../repositories/accountRepository');
 const AppError = require('../errors/AppError');
+const Transaction = require('../models/Transaction');
 const {
   validateCreateAccount,
   validateDeposit,
@@ -48,6 +49,7 @@ class AccountService {
     const amount = validateDeposit(payload);
 
     account.balance += amount;
+    account.addTransaction(new Transaction('deposit', amount, 'Depósito'));
     accountRepository.save(account);
 
     return {
@@ -77,6 +79,7 @@ class AccountService {
       throw new AppError('Operation rejected: balance cannot be negative.', 400);
     }
 
+    account.addTransaction(new Transaction('withdraw', amount, 'Retiro'));
     accountRepository.save(account);
 
     return {
@@ -84,6 +87,15 @@ class AccountService {
       operation: 'withdraw',
       amount,
       newBalance: account.balance,
+    };
+  }
+
+  getTransactionHistory(id) {
+    const account = this.getAccountById(id);
+    return {
+      accountId: account.id,
+      ownerName: account.ownerName,
+      transactions: account.transactions,
     };
   }
 

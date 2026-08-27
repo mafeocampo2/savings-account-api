@@ -72,6 +72,15 @@ function withdraw(req, res, next) {
   }
 }
 
+function getTransactionHistory(req, res, next) {
+  try {
+    const result = accountService.getTransactionHistory(req.params.id);
+    return res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 function deleteAccount(req, res, next) {
   try {
     const result = accountService.deleteAccount(req.params.id);
@@ -92,5 +101,6 @@ module.exports = {
   getBalance,
   deposit,
   withdraw,
+  getTransactionHistory,
   deleteAccount,
 };
