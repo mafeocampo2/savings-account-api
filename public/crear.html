@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Crear cuenta — Sistema de Ahorros</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">$</div>
+      <div class="brand-text">
+        <h1>Sistema de Ahorros</h1>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <span id="themeLabel">Modo oscuro</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§1</span>
+      <span class="section-title">Crear nueva cuenta</span>
+    </div>
+
+    <div class="grid" style="grid-template-columns: 1fr;">
+      <div class="field">
+        <label>Nombre del titular</label>
+        <input id="ownerInput" type="text" placeholder="Nombre completo">
+      </div>
+      <div class="field">
+        <label>Depósito inicial (opcional)</label>
+        <input id="initDeposit" type="text" inputmode="numeric" placeholder="0">
+      </div>
+      <div style="display:flex; gap:12px; margin-top:24px;">
+        <button class="btn-primary" onclick="createAccount()">Crear cuenta</button>
+        <a href="index.html" class="btn-ghost">Volver</a>
+      </div>
+    </div>
+
+    <div id="createNotice" class="notice"></div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+<script>
+async function createAccount() {
+  const owner = document.getElementById('ownerInput').value.trim();
+  const initRaw = document.getElementById('initDeposit').value.trim();
+
+  if (!owner) {
+    showNotice('createNotice', 'Ingresa el nombre del titular.', false);
+    return;
+  }
+
+  try {
+    const body = { ownerName: owner };
+    if (initRaw !== '') body.initialBalance = parseAmount(initRaw);
+
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const json = await res.json();
+
+    if (!res.ok || !json.success) {
+      showNotice('createNotice', json.message || 'No fue posible crear la cuenta.', false);
+      return;
+    }
+
+    showNotice('createNotice', `Cuenta creada: #${json.data.id}`, true);
+    document.getElementById('ownerInput').value = '';
+    document.getElementById('initDeposit').value = '';
+
+    setTimeout(() => {
+      window.location.href = `gestion.html?id=${json.data.id}`;
+    }, 1500);
+  } catch (e) {
+    showNotice('createNotice', 'Error conectando con el servidor.', false);
+  }
+}
+</script>
+
+</body>
+</html>

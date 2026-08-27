@@ -15,6 +15,9 @@ router.get('/:id', accountController.getAccount);
 // GET /api/accounts/:id/balance -> check balance
 router.get('/:id/balance', accountController.getBalance);
 
+// GET /api/accounts/:id/history -> get transaction history
+router.get('/:id/history', accountController.getTransactionHistory);
+
 // POST /api/accounts/:id/deposit -> deposit money
 router.post('/:id/deposit', accountController.deposit);
 

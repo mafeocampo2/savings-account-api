@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Confirmar operación — Sistema de Ahorros</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">$</div>
+      <div class="brand-text">
+        <h1>Sistema de Ahorros</h1>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <span id="themeLabel">Modo oscuro</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="section">
+    <div class="section-head">
+      <span class="section-num">§2</span>
+      <span class="section-title">Confirmar operación</span>
+    </div>
+
+    <div style="background:var(--paper); padding:24px; border-radius:8px; margin-bottom:24px;">
+      <div style="display:grid; gap:18px;">
+        <div>
+          <span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Tipo de operación</span>
+          <div id="opType" style="font-size:18px; font-weight:700;"></div>
+        </div>
+        <div>
+          <span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Monto</span>
+          <div style="font-size:32px; font-weight:800; color:var(--amount);" id="opAmount"></div>
+        </div>
+        <div>
+          <span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Saldo actual</span>
+          <div style="font-size:18px; font-weight:700;" id="currentBalance"></div>
+        </div>
+        <div>
+          <span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Saldo después de la operación</span>
+          <div style="font-size:18px; font-weight:700; color:var(--green);" id="newBalance"></div>
+        </div>
+        <div>
+          <span style="color:var(--ink-soft); font-size:12px; text-transform:uppercase; font-weight:600;">Fecha y hora</span>
+          <div style="font-size:14px;" id="dateTime"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px;">
+      <button class="btn-primary" onclick="performOperation()">Confirmar</button>
+      <a id="backLink" href="#" class="btn-ghost">Cancelar</a>
+    </div>
+
+    <div id="notice" class="notice"></div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+<script>
+const accountId = getQueryParam('id');
+const tipo = getQueryParam('tipo');
+const amount = sessionStorage.getItem('operationAmount');
+
+async function loadData() {
+  if (!accountId || !tipo || !amount) {
+    window.location.href = `accion.html?id=${accountId}&tipo=${tipo}`;
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/${accountId}`);
+    const json = await res.json();
+
+    if (!res.ok || !json.data) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    const acc = json.data;
+    const isDeposit = tipo === 'deposit';
+    const amountNum = Number(amount);
+    const newBal = isDeposit ? acc.balance + amountNum : acc.balance - amountNum;
+
+    document.getElementById('opType').textContent = isDeposit ? 'Depósito' : 'Retiro';
+    document.getElementById('opAmount').innerHTML = money(amountNum);
+    document.getElementById('currentBalance').innerHTML = money(acc.balance);
+    document.getElementById('newBalance').innerHTML = money(newBal);
+
+    const now = new Date();
+    document.getElementById('dateTime').textContent = fmtDateTime(now);
+
+    document.getElementById('backLink').href = `accion.html?id=${accountId}&tipo=${tipo}`;
+  } catch (e) {
+    showNotice('notice', 'Error cargando datos.', false);
+  }
+}
+
+async function performOperation() {
+  try {
+    const url = `${API_BASE}/${accountId}/${tipo}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: Number(amount) })
+    });
+    const json = await res.json();
+
+    if (!res.ok || !json.success) {
+      showNotice('notice', json.message || 'Operación rechazada.', false);
+      return;
+    }
+
+    sessionStorage.setItem('operationResult', JSON.stringify(json.data));
+    window.location.href = `comprobante.html?id=${accountId}`;
+  } catch (e) {
+    showNotice('notice', 'Error procesando operación.', false);
+  }
+}
+
+loadData();
+</script>
+
+</body>
+</html>

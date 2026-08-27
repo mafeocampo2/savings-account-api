@@ -2,350 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Libreta de Ahorros — TECHSOFT S.A.</title>
+<title>Sistema de Ahorros</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  :root{
-    --arandano: #34324E;
-    --denim: #2F5680;
-    --acero: #6D8CA3;
-    --alicia: #A7C6D9;
-    --alicia-deep: #8FB6CC;
-    --denim-btn: #2F5680;
-
-    --yellow: var(--alicia);
-    --yellow-deep: var(--alicia-deep);
-    --navy: var(--arandano);
-    --navy-2: #3D3B5C;
-    --ink: #2A2A38;
-    --ink-soft: #6B7280;
-    --line: #DCE3E9;
-    --paper: #F5F7F9;
-    --white: #FFFFFF;
-    --green: #2E6E5E;
-    --green-bg: #E7F2EE;
-    --red: #A94A45;
-    --red-bg: #F7EBE9;
-  }
-
-  [data-theme="dark"]{
-    --navy: #1C1B2E;
-    --navy-2: #2A2846;
-    --ink: #E8E9EE;
-    --ink-soft: #9AA3B2;
-    --line: #33344A;
-    --paper: #14141F;
-    --white: #1D1E2C;
-    --yellow: var(--alicia);
-    --yellow-deep: var(--alicia-deep);
-    --green: #6FCBAE;
-    --green-bg: #1C3833;
-    --red: #E1958F;
-    --red-bg: #3A2426;
-    --denim-btn: #7FA3C4;
-  }
-
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background: var(--paper);
-    color: var(--ink);
-    font-family: "Helvetica Neue", Arial, "Segoe UI", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    transition: background-color .2s ease, color .2s ease;
-  }
-  .section, .topbar, .status-pill, input, select, button{
-    transition: background-color .2s ease, color .2s ease, border-color .2s ease;
-  }
-  .page{
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 0 32px 80px;
-  }
-
-  /* ---------- Top bar ---------- */
-  .topbar{
-    background: var(--navy);
-    color: var(--white);
-    margin-bottom: 40px;
-  }
-  .topbar-inner{
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 22px 32px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-  }
-  .brand{
-    display:flex;
-    align-items:center;
-    gap:14px;
-  }
-  .brand-mark{
-    width:38px;height:38px;
-    background: var(--yellow);
-    border-radius: 8px;
-    display:flex;align-items:center;justify-content:center;
-    font-weight:800;
-    color: var(--navy);
-    font-size:18px;
-    flex-shrink:0;
-  }
-  .brand-text .eyebrow{
-    font-size:11px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color: #9FB2C4;
-    font-weight:600;
-    margin-bottom:2px;
-  }
-  .brand-text h1{
-    margin:0;
-    font-size:20px;
-    font-weight:700;
-    letter-spacing:-.01em;
-  }
-  .status-pill{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background: rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.18);
-    padding:8px 16px;
-    border-radius:999px;
-    font-size:13px;
-    font-weight:600;
-  }
-  .status-dot{
-    width:8px;height:8px;border-radius:50%;
-    background: var(--yellow);
-    box-shadow: 0 0 0 4px rgba(167,198,217,.22);
-  }
-  .status-dot.offline{
-    background: var(--red);
-    box-shadow: 0 0 0 4px rgba(169,74,69,.22);
-  }
-  .topbar-actions{
-    display:flex;
-    align-items:center;
-    gap:14px;
-  }
-  .theme-toggle{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background: rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.18);
-    color: var(--white);
-    padding:8px 14px;
-    border-radius:999px;
-    font-size:13px;
-    font-weight:600;
-    text-transform:none;
-    letter-spacing:normal;
-    cursor:pointer;
-  }
-  .theme-toggle:hover{ background: rgba(255,255,255,.14); }
-  .theme-toggle .icon{ font-size:14px; line-height:1; }
-
-  /* ---------- Section shell ---------- */
-  .section{
-    background: var(--white);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding: 30px 32px;
-    margin-bottom: 22px;
-  }
-  .section-head{
-    display:flex;
-    align-items:baseline;
-    gap:10px;
-    margin-bottom:22px;
-  }
-  .section-num{
-    font-size:13px;
-    font-weight:800;
-    color: var(--navy);
-    background: var(--yellow);
-    padding:3px 9px;
-    border-radius:6px;
-    letter-spacing:.02em;
-  }
-  .section-title{
-    font-size:15px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.06em;
-    color: var(--ink);
-  }
-
-  .grid{
-    display:grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 24px;
-    align-items:end;
-  }
-  .field label{
-    display:block;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color: var(--ink-soft);
-    margin-bottom:9px;
-  }
-  .field input, .field select{
-    width:100%;
-    border:none;
-    border-bottom: 2px solid var(--line);
-    background:transparent;
-    font-size:17px;
-    font-family: inherit;
-    color: var(--ink);
-    padding: 6px 2px 10px;
-    outline:none;
-    transition: border-color .15s ease;
-  }
-  .field input:focus, .field select:focus{
-    border-bottom-color: var(--navy);
-  }
-  .field select{ cursor:pointer; }
-
-  button{
-    font-family:inherit;
-    font-size:14px;
-    font-weight:700;
-    letter-spacing:.04em;
-    text-transform:uppercase;
-    border-radius:8px;
-    padding: 14px 26px;
-    border:none;
-    cursor:pointer;
-    transition: transform .08s ease, filter .12s ease;
-    white-space:nowrap;
-  }
-  button:active{ transform: translateY(1px); }
-  button:disabled{ opacity:.55; cursor:not-allowed; }
-  .btn-primary{
-    background: var(--navy);
-    color: var(--white);
-  }
-  .btn-primary:hover{ background: var(--navy-2); }
-  .btn-accent{
-    background: var(--yellow);
-    color: var(--navy);
-  }
-  .btn-accent:hover{ filter: brightness(0.96); }
-  .btn-ghost{
-    background: transparent;
-    color: var(--navy);
-    border: 2px solid var(--navy);
-  }
-  .btn-ghost:hover{ background: rgba(10,31,51,.05); }
-  .btn-danger{
-    background: transparent;
-    color: var(--denim-btn);
-    border: 2px solid var(--denim-btn);
-  }
-  .btn-danger:hover{ background: rgba(127,163,196,.1); }
-
-  .notice{
-    margin-top:0;
-    padding: 0 18px;
-    max-height: 0;
-    border-radius:9px;
-    font-size:14px;
-    font-weight:600;
-    opacity: 0;
-    overflow: hidden;
-    transition: opacity .4s ease, max-height .4s ease, margin-top .4s ease, padding .4s ease;
-  }
-  .notice.show{
-    margin-top:18px;
-    padding: 14px 18px;
-    max-height: 200px;
-    opacity: 1;
-  }
-  .notice.ok{ background: var(--green-bg); color: var(--green); }
-  .notice.err{ background: var(--red-bg); color: var(--red); }
-
-  /* ---------- balance ---------- */
-  .balance-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    gap: 24px;
-    flex-wrap:wrap;
-  }
-  .balance-label{
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color: var(--ink-soft);
-    margin-bottom:10px;
-  }
-  .balance-value{
-    font-size:44px;
-    font-weight:800;
-    letter-spacing:-.02em;
-    color: var(--navy);
-    font-variant-numeric: tabular-nums;
-  }
-  .balance-value span{ color: var(--ink-soft); font-weight:600; }
-  .account-select-wrap{
-    display:flex;
-    gap:14px;
-    align-items:flex-end;
-  }
-  .account-select-wrap .field{ min-width:220px; }
-
-  /* ---------- ledger ---------- */
-  table{ width:100%; border-collapse:collapse; }
-  thead th{
-    text-align:left;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color: var(--ink-soft);
-    padding: 0 0 12px;
-    border-bottom: 2px solid var(--line);
-  }
-  tbody td{
-    padding: 14px 0;
-    border-bottom: 1px solid var(--line);
-    font-size:15px;
-  }
-  tbody tr:last-child td{ border-bottom:none; }
-  .t-time{ color: var(--ink-soft); font-variant-numeric: tabular-nums; width:110px; }
-  .t-amt{ text-align:right; font-weight:700; font-variant-numeric: tabular-nums; }
-  .t-amt.pos{ color: var(--green); }
-  .t-amt.neg{ color: var(--red); }
-  .t-amt.neu{ color: var(--ink-soft); }
-  .empty-row td{
-    color: var(--ink-soft);
-    font-style:italic;
-    padding: 22px 0;
-  }
-
-  .footer-note{
-    text-align:center;
-    font-size:12px;
-    color: var(--ink-soft);
-    letter-spacing:.03em;
-    padding-top: 10px;
-  }
-  .footer-note .dash{ margin:0 10px; }
-
-  @media (max-width: 720px){
-    .grid{ grid-template-columns: 1fr; }
-    .balance-row{ flex-direction:column; align-items:flex-start; }
-    .account-select-wrap{ width:100%; }
-    .account-select-wrap .field{ flex:1; }
-  }
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -354,14 +13,12 @@
     <div class="brand">
       <div class="brand-mark">$</div>
       <div class="brand-text">
-        <div class="eyebrow">TechSoft S.A. · Prototipo</div>
-        <h1>Libreta de Ahorros</h1>
+        <h1>Sistema de Ahorros</h1>
       </div>
     </div>
     <div class="topbar-actions">
       <div class="status-pill"><span class="status-dot" id="statusDot"></span> <span id="statusText">verificando…</span></div>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
-        <span class="icon" id="themeIcon">🌙</span>
         <span id="themeLabel">Modo oscuro</span>
       </button>
     </div>
@@ -370,348 +27,57 @@
 
 <div class="page">
 
-  <!-- §1 Abrir cuenta -->
   <div class="section">
     <div class="section-head">
       <span class="section-num">§1</span>
-      <span class="section-title">Abrir cuenta</span>
+      <span class="section-title">Mis cuentas</span>
     </div>
-    <div class="grid">
-      <div class="field">
-        <label>Titular</label>
-        <input id="ownerInput" type="text" placeholder="Nombre completo">
-      </div>
-      <div class="field">
-        <label>Depósito inicial</label>
-        <input id="initDeposit" type="number" placeholder="0" min="0" step="0.01">
-      </div>
-      <button class="btn-primary" onclick="createAccount()">Crear cuenta</button>
+
+    <div id="accountsList">
+      <p style="color:var(--ink-soft);">Cargando cuentas...</p>
     </div>
-    <div id="createNotice" class="notice"></div>
+
+    <div style="margin-top:24px;">
+      <a href="crear.html" class="btn-primary">+ Crear nueva cuenta</a>
+    </div>
   </div>
 
-  <!-- §2 Cuenta activa -->
-  <div class="section">
-    <div class="section-head">
-      <span class="section-num">§2</span>
-      <span class="section-title">Cuenta activa</span>
-    </div>
-    <div class="account-select-wrap" style="margin-bottom:26px;">
-      <div class="field">
-        <label>Seleccionar cuenta</label>
-        <select id="accountSelect" onchange="renderBalance()"></select>
-      </div>
-      <button class="btn-ghost" onclick="refreshList()">Actualizar lista</button>
-    </div>
-    <div class="balance-row">
-      <div>
-        <div class="balance-label">Saldo disponible</div>
-        <div class="balance-value"><span>$</span> <span id="balanceValue">0,00</span></div>
-      </div>
-      <button class="btn-danger" onclick="deleteAccount()">Eliminar cuenta</button>
-    </div>
-    <div id="deleteNotice" class="notice"></div>
-  </div>
-
-  <!-- §3 Depositar -->
-  <div class="section">
-    <div class="section-head">
-      <span class="section-num">§3</span>
-      <span class="section-title">Depositar</span>
-    </div>
-    <div class="grid">
-      <div class="field">
-        <label>Monto</label>
-        <input id="depositAmt" type="number" placeholder="0" min="0" step="0.01">
-      </div>
-      <div></div>
-      <button class="btn-accent" onclick="deposit()">Depositar</button>
-    </div>
-    <div id="depositNotice" class="notice"></div>
-  </div>
-
-  <!-- §4 Retirar -->
-  <div class="section">
-    <div class="section-head">
-      <span class="section-num">§4</span>
-      <span class="section-title">Retirar</span>
-    </div>
-    <div class="grid">
-      <div class="field">
-        <label>Monto</label>
-        <input id="withdrawAmt" type="number" placeholder="0" min="0" step="0.01">
-      </div>
-      <div></div>
-      <button class="btn-danger" onclick="withdraw()">Retirar</button>
-    </div>
-    <div id="withdrawNotice" class="notice"></div>
-  </div>
-
-  <!-- §5 Movimientos -->
-  <div class="section">
-    <div class="section-head">
-      <span class="section-num">§5</span>
-      <span class="section-title">Movimientos de esta sesión</span>
-    </div>
-    <table>
-      <thead>
-        <tr><th>Hora</th><th>Movimiento</th><th style="text-align:right;">Monto</th></tr>
-      </thead>
-      <tbody id="ledgerBody">
-        <tr class="empty-row"><td colspan="3">Aún no hay movimientos en esta sesión.</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="footer-note">fin de la libreta<span class="dash">—</span>los datos viven en el servidor mientras esté corriendo</div>
+  <div class="footer-note">fin del registro<span class="dash">—</span>los datos viven en el servidor mientras esté corriendo</div>
 
 </div>
 
+<script src="app.js"></script>
 <script>
-/*
- * This frontend is a thin client: it does NOT store account data itself.
- * Every action (create account, deposit, withdraw, balance check) calls
- * the real REST API (src/routes/accountRoutes.js), so all business rules
- * are validated on the server, not just in the browser.
- */
-const API_BASE = window.location.origin + '/api/accounts';
-
-let accounts = {};      // local cache of accounts fetched from the API: id -> {id, owner, balance}
-let ledger = [];        // {time, label, amount, kind} - session-only log, not persisted
-
-function fmt(n){
-  return Number(n).toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-
-function nowStr(){
-  const d = new Date();
-  return d.toLocaleTimeString('es-CO', {hour12:false});
-}
-
-const noticeTimers = {};
-
-function showNotice(id, msg, ok){
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.className = 'notice show ' + (ok ? 'ok' : 'err');
-
-  if(noticeTimers[id]) clearTimeout(noticeTimers[id]);
-  noticeTimers[id] = setTimeout(() => {
-    el.classList.remove('show');
-  }, 10000);
-}
-
-async function checkHealth(){
-  const dot = document.getElementById('statusDot');
-  const text = document.getElementById('statusText');
-  try{
-    const res = await fetch(window.location.origin + '/health');
-    if(!res.ok) throw new Error();
-    dot.classList.remove('offline');
-    text.textContent = 'conectado';
-  }catch(e){
-    dot.classList.add('offline');
-    text.textContent = 'sin conexión con el servidor';
-  }
-}
-
-async function refreshList(selectId){
-  try{
+async function loadAccounts() {
+  try {
     const res = await fetch(API_BASE);
     const json = await res.json();
-    accounts = {};
-    (json.data || []).forEach(a => { accounts[a.id] = { id: a.id, owner: a.ownerName, balance: a.balance }; });
-  }catch(e){
-    accounts = {};
-  }
+    const accounts = json.data || [];
 
-  const sel = document.getElementById('accountSelect');
-  const current = selectId !== undefined ? String(selectId) : sel.value;
-  sel.innerHTML = '';
-  const ids = Object.keys(accounts);
-  if(ids.length === 0){
-    const opt = document.createElement('option');
-    opt.textContent = 'Sin cuentas creadas';
-    opt.value = '';
-    sel.appendChild(opt);
-  } else {
-    ids.forEach(id => {
-      const acc = accounts[id];
-      const opt = document.createElement('option');
-      opt.value = id;
-      opt.textContent = `#${acc.id} — ${acc.owner}`;
-      sel.appendChild(opt);
-    });
-    if(ids.includes(current)) sel.value = current;
-  }
-  renderBalance();
-}
-
-function renderBalance(){
-  const sel = document.getElementById('accountSelect');
-  const acc = accounts[sel.value];
-  document.getElementById('balanceValue').textContent = acc ? fmt(acc.balance) : '0,00';
-}
-
-async function createAccount(){
-  const owner = document.getElementById('ownerInput').value.trim();
-  const initRaw = document.getElementById('initDeposit').value;
-
-  try{
-    const body = { ownerName: owner };
-    if(initRaw !== '') body.initialBalance = Number(initRaw);
-
-    const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const json = await res.json();
-
-    if(!res.ok || !json.success){
-      showNotice('createNotice', json.message || 'No fue posible crear la cuenta.', false);
+    const list = document.getElementById('accountsList');
+    if (accounts.length === 0) {
+      list.innerHTML = '<p style="color:var(--ink-soft); font-style:italic;">Aún no hay cuentas creadas.</p>';
       return;
     }
 
-    addLedger(`Apertura de cuenta #${json.data.id}`, json.data.balance, 'neu');
-    showNotice('createNotice', `Cuenta creada — #${json.data.id} · ${json.data.ownerName}. Pulsa "Actualizar lista" para verla en el selector.`, true);
-
-    document.getElementById('ownerInput').value = '';
-    document.getElementById('initDeposit').value = '';
-  }catch(e){
-    showNotice('createNotice', 'No fue posible conectar con el servidor.', false);
+    list.innerHTML = accounts.map(acc => `
+      <div class="card">
+        <div>
+          <strong class="card-owner">#${acc.id} — ${acc.ownerName}</strong>
+          <div class="card-amount">${money(acc.balance)}</div>
+        </div>
+        <div class="card-side">
+          <span class="card-date">${new Date(acc.createdAt).toLocaleDateString('es-CO')}</span>
+          <a href="gestion.html?id=${acc.id}" class="btn-primary">Gestionar</a>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    document.getElementById('accountsList').innerHTML = '<p style="color:var(--red);">Error cargando cuentas.</p>';
   }
 }
 
-async function deposit(){
-  const sel = document.getElementById('accountSelect');
-  const accId = sel.value;
-  const amtRaw = document.getElementById('depositAmt').value;
-
-  if(!accId){
-    showNotice('depositNotice', 'Selecciona una cuenta activa primero.', false);
-    return;
-  }
-
-  try{
-    const res = await fetch(`${API_BASE}/${accId}/deposit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: Number(amtRaw) })
-    });
-    const json = await res.json();
-
-    if(!res.ok || !json.success){
-      showNotice('depositNotice', json.message || 'Depósito rechazado.', false);
-      addLedger('Depósito rechazado', 0, 'neg');
-      return;
-    }
-
-    showNotice('depositNotice', `Aprobado — nuevo saldo: $ ${fmt(json.data.newBalance)}. Pulsa "Actualizar lista" para reflejarlo arriba.`, true);
-    addLedger('Depósito', json.data.amount, 'pos');
-    document.getElementById('depositAmt').value = '';
-  }catch(e){
-    showNotice('depositNotice', 'No fue posible conectar con el servidor.', false);
-  }
-}
-
-async function withdraw(){
-  const sel = document.getElementById('accountSelect');
-  const accId = sel.value;
-  const amtRaw = document.getElementById('withdrawAmt').value;
-
-  if(!accId){
-    showNotice('withdrawNotice', 'Selecciona una cuenta activa primero.', false);
-    return;
-  }
-
-  try{
-    const res = await fetch(`${API_BASE}/${accId}/withdraw`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: Number(amtRaw) })
-    });
-    const json = await res.json();
-
-    if(!res.ok || !json.success){
-      showNotice('withdrawNotice', json.message || 'Retiro rechazado.', false);
-      addLedger('Retiro rechazado', 0, 'neg');
-      return;
-    }
-
-    showNotice('withdrawNotice', `Aprobado — nuevo saldo: $ ${fmt(json.data.newBalance)}. Pulsa "Actualizar lista" para reflejarlo arriba.`, true);
-    addLedger('Retiro', -json.data.amount, 'neg');
-    document.getElementById('withdrawAmt').value = '';
-  }catch(e){
-    showNotice('withdrawNotice', 'No fue posible conectar con el servidor.', false);
-  }
-}
-
-async function deleteAccount(){
-  const sel = document.getElementById('accountSelect');
-  const accId = sel.value;
-
-  if(!accId){
-    showNotice('deleteNotice', 'Selecciona una cuenta activa primero.', false);
-    return;
-  }
-
-  const acc = accounts[accId];
-  const label = acc ? `#${acc.id} · ${acc.owner}` : `#${accId}`;
-
-  try{
-    const res = await fetch(`${API_BASE}/${accId}`, { method: 'DELETE' });
-    const json = await res.json();
-
-    if(!res.ok || !json.success){
-      showNotice('deleteNotice', json.message || 'No fue posible eliminar la cuenta.', false);
-      return;
-    }
-
-    showNotice('deleteNotice', `Cuenta ${label} eliminada. Pulsa "Actualizar lista" para quitarla del selector.`, true);
-    addLedger(`Cierre de cuenta ${label}`, 0, 'neu');
-  }catch(e){
-    showNotice('deleteNotice', 'No fue posible conectar con el servidor.', false);
-  }
-}
-
-function addLedger(label, amount, kind){
-  ledger.unshift({ time: nowStr(), label, amount, kind });
-  renderLedger();
-}
-
-function renderLedger(){
-  const body = document.getElementById('ledgerBody');
-  if(ledger.length === 0){
-    body.innerHTML = '<tr class="empty-row"><td colspan="3">Aún no hay movimientos en esta sesión.</td></tr>';
-    return;
-  }
-  body.innerHTML = ledger.map(entry => {
-    const sign = entry.kind === 'pos' ? '+ ' : entry.kind === 'neg' ? '− ' : '';
-    return `<tr>
-      <td class="t-time">${entry.time}</td>
-      <td>${entry.label}</td>
-      <td class="t-amt ${entry.kind}">${sign}$ ${fmt(Math.abs(entry.amount))}</td>
-    </tr>`;
-  }).join('');
-}
-
-function toggleTheme(){
-  const root = document.documentElement;
-  const isDark = root.getAttribute('data-theme') === 'dark';
-  if(isDark){
-    root.removeAttribute('data-theme');
-    document.getElementById('themeIcon').textContent = '🌙';
-    document.getElementById('themeLabel').textContent = 'Modo oscuro';
-  } else {
-    root.setAttribute('data-theme', 'dark');
-    document.getElementById('themeIcon').textContent = '☀️';
-    document.getElementById('themeLabel').textContent = 'Modo claro';
-  }
-}
-
-checkHealth();
-refreshList();
+loadAccounts();
 </script>
 
 </body>
